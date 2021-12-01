@@ -12,6 +12,8 @@ int main(int argc, char *argv[]) {
 
     LSH_Insert_Points_To_Buckets(Lsh);
 
+    // Lsh->print_buckets();
+
     int queries = Lsh->queries_data.size();
     int N = Lsh->get_N();
 

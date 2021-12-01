@@ -7,7 +7,7 @@ extern LSH *Lsh; /* LSH Object */
 int W;
 
 /* Initialize the variables used by the hash function */
-LSH::LSH(string input, string query, string output, int L_,int N_,int k_,int R_, long long int n, int dim, vector<vector<int>> Data)
+LSH::LSH(string input, string query, string output, int L_,int N_,int k_,int R_, long long int n, int dim, vector<vector<double>> Data)
         :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), R(R_), points_num(n), dimension(dim)
     {
         data = Data;
@@ -58,10 +58,10 @@ LSH::~LSH() {
 
 void LSH::print_buckets() {
     for(int j=0; j < this->L; j++) {
-        for(long int i=0; i < this->hashtable_size - 2498; i++){
-            cout << "Table " << j << " in Bucket " << i << endl;
+        for(long int i=0; i < this->hashtable_size; i++){
             int counter = 0;
             if (hashtables[j][i] != NULL) {
+                cout << "Table " << j << " in Bucket " << i << endl;
                 for (auto point: hashtables[j][i]->points) {
                     if (counter == 5) break;
                     cout << "Item id: " << point.first.first << endl;
@@ -84,7 +84,7 @@ long long int mod(long long int value, long int Mod) {
 }
 
 // Return the hash value for a specific query in a table
-vector<long long int> LSH::Specific_Hash_Value(int g, vector<int> item) {
+vector<long long int> LSH::Specific_Hash_Value(int g, vector<double> item) {
     int L = this->get_L();
     int k = this->get_k();
     long long int ID = -1;
@@ -96,6 +96,7 @@ vector<long long int> LSH::Specific_Hash_Value(int g, vector<int> item) {
         int sum = 0;
         vector <double> v = Hash_Fun.get_vector_v()[h];
         vector <double> t = Hash_Fun.get_vector_t();
+
         /* The inner product is calculated by multiplying all the coordinates of 2 vectors and summing them */
         for (int dim = 1; dim < this->get_dimension(); dim++) {
             sum += item[dim] * v[dim];
@@ -143,7 +144,7 @@ void Print_values() {
 */
 int LSH::Calculate_w() {
     long double sum = 0;
-    long int subpoints = this->points_num * 5/100;
+    long int subpoints = this->points_num * 40/100;
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {
@@ -200,7 +201,7 @@ Euclidean_Hash_Function::~Euclidean_Hash_Function() {
 ** do the same for next table
 ** whilst doing that compare the nearest items you found in the tables with each other and keep the N-closest
 */
-vector<pair<long double, int>> Nearest_N_search(vector<int> query) {
+vector<pair<long double, int>> Nearest_N_search(vector<double> query) {
     long double d = M; // Minimum distance
     long int b = -1; // Closest item so far
 
@@ -225,7 +226,7 @@ vector<pair<long double, int>> Nearest_N_search(vector<int> query) {
             long double euc_dist = euclidean_dis(Lsh->data[index], query);
 
             if (euc_dist < d) {
-                b = index + 1;
+                b = index;
                 if (none_of(near_items.begin(), near_items.end(), [b](pair<long double, int> item) { return b == item.second; })) {
                     if (near_items.size() >= N) {
                         near_items.pop_back();
@@ -250,7 +251,7 @@ vector<pair<long double, int>> Nearest_N_search(vector<int> query) {
 ** if the distance is within the range then the Item is near (store the point)
 *** if the iterations reach 100*L then stop the search
 */
-vector<int> Search_by_range(vector<int> query) {
+vector<int> Search_by_range(vector<double> query) {
     long int iterations = 0; // When it reaches 100L stop
     int L = Lsh->get_L();
     int k = Lsh->get_k();
@@ -268,7 +269,7 @@ vector<int> Search_by_range(vector<int> query) {
             iterations++;
             int index = Points.first.first;
             long double euc_dist = euclidean_dis(Lsh->data[index], query);
-            index += 1; // In input file the index starts from 1
+            // index += 1; // In input file the index starts from 1
 
             if (euc_dist <= R) {
                 if (none_of(near_items.begin(), near_items.end(), [index](int item) { return index == item; })) {
@@ -284,7 +285,7 @@ vector<int> Search_by_range(vector<int> query) {
 
 // This function is a duplicate of the above
 // the only difference is that it stores and returns the distance as well
-vector<std::pair<long double,int>> LSH::Search_by_range2(vector<int> query,long int R_custom) {
+vector<std::pair<long double,int>> LSH::Search_by_range2(vector<double> query,long int R_custom) {
     long int iterations = 0; // When it reaches 100L stop
     int L = Lsh->get_L();
     int k = Lsh->get_k();
@@ -317,7 +318,7 @@ vector<std::pair<long double,int>> LSH::Search_by_range2(vector<int> query,long 
 }
 
 // For Debugging
-vector<int> Brute_by_range(vector<int> query) {
+vector<int> Brute_by_range(vector<double> query) {
     int L = Lsh->get_L();
     int k = Lsh->get_k();
     int R = Lsh->get_R();

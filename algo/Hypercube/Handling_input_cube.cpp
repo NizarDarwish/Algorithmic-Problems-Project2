@@ -55,7 +55,7 @@ void store_data(int argc,char** argv){
         exit (EXIT_FAILURE);
     }
     //data vector
-    vector<vector<int>> vec;
+    vector<vector<double>> vec;
     read_file(vec,input_file);
 
     Hpb = new Hypercube(input_file,query_file, output_file, R,k,1000,num_of_points(),N, dim_data(),probes,vec);

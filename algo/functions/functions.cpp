@@ -10,13 +10,25 @@ string dir_input = "";
 long int dim_data() {
     long int dim = 0;
 
-	string str;
+    string line;
 
     ifstream Data_File(dir_input); /* Data File */
 
-	getline(Data_File, str);
+    while(getline(Data_File,line)){
+        stringstream s;
+        s << line;
 
-    dim = std::count(str.begin(), str.end(), ' ');
+        string first_item;
+        s >> first_item;
+        double d;
+
+        while(s >> d){
+            dim++;
+        }
+
+        s.str("");
+        break;
+    }
 
 	Data_File.clear();
 	Data_File.seekg(0,ios::beg); // Reseting the pointer
@@ -42,7 +54,7 @@ long int num_of_points() {
 	return num_of_lines;
 }
 
-void read_file(vector<vector<int>> &vec, string input_file){
+void read_file(vector<vector<double>> &vec, string input_file){
     string line;
     if (dir_input == "") dir_input = input_file;
     ifstream Data_File(input_file);
@@ -52,14 +64,14 @@ void read_file(vector<vector<int>> &vec, string input_file){
             stringstream s;
             s << line;                   //send the line to the stringstream object
 
-            int columns = 0;    
+            string first_item;
+            s >> first_item;
             double d;
-            vector<int> v1;
+            vector<double> v1;
 
             while(s >> d){
-                int num = static_cast<int>(d);
+                double num = static_cast<double>(d);
                 v1.push_back(num);
-                columns++;  //while there's something in the line, increase the number of columns
             } 
             vec.push_back(v1);
 
@@ -83,13 +95,13 @@ double Normal_distribution() {
 }
 
 // Calculate Euclidean Distance
-long double euclidean_dis(vector<int> vec1, vector<int> vec2) {
+long double euclidean_dis(vector<double> vec1, vector<double> vec2) {
     long double dist=0.0;
 
     auto itA = vec1.begin();
     auto itB = vec2.begin();
-    ++itA;
-    ++itB;
+    // ++itA;
+    // ++itB;
 
     while(itA != vec1.end() || itB != vec2.end())
     {
@@ -105,7 +117,7 @@ long double euclidean_dis(vector<int> vec1, vector<int> vec2) {
 	return sqrt(dist);
 }
 
-vector <double> Nearest_N_brute(vector<vector<int>> data, vector<int> query, int N) {
+vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> query, int N) {
     long double d = (double) BIG; // Minimum distance
 
     vector <double> near_items;

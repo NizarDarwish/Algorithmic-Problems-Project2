@@ -51,7 +51,7 @@ void store_LSH_data(int argc,char** argv){
         exit (EXIT_FAILURE);
     }
 
-    vector<vector<int>> vec;
+    vector<vector<double>> vec;
     read_file(vec,input_file);
 
     Lsh = new LSH(input_file, query_file, output_file, L, N, k, R, num_of_points(), dim_data(), vec);

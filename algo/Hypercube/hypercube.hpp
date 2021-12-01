@@ -68,7 +68,7 @@ class Euclidean_H_i {
     		t.clear();
 		} 
 		
-		int Specific_Hi(std::vector<int> item,int var) {
+		int Specific_Hi(std::vector<double> item,int var) {
 			long int sum = 0;
 			for (int var2 = 1; var2 < dimlim; var2++) {
         		sum += item[var2] * v[var][var2];
@@ -116,7 +116,7 @@ class Hypercube{
 	hypercube_hashtable hypercube;
 	Euclidean_H_i *H_i_ptr;
 	// vector of the vectors is given 
-	std::vector<std::vector<int>> data_vectors; 
+	std::vector<std::vector<double>> data_vectors; 
 	std::vector<std::uniform_int_distribution<int> > f_i; // Distributions for fi 
 	std::default_random_engine generator; 
     std::vector<std::unordered_map<int, bool>  > Hi_map; //  map f with unique values
@@ -127,26 +127,26 @@ class Hypercube{
 		std::string input_file;
 		std::string query_file;
 		std::string output_file;
-		std::vector<std::vector<int>> query_data;
+		std::vector<std::vector<double>> query_data;
 		duration<double, std::milli> ANN_time;
         duration<double, std::milli> NNB_time;
 
 		Hypercube(std::string input_, std::string query_, std::string output_,int R_,int k_,int threshold_, 
-		int points_num_,int N_,int space_,int max_probes_,std::vector<std::vector<int>> data_vectors_);
+		int points_num_,int N_,int space_,int max_probes_,std::vector<std::vector<double>> data_vectors_);
 
 		~Hypercube();
 
-		int hypercube_hash(std::vector<int> vec_point);
+		int hypercube_hash(std::vector<double> vec_point);
 
 		// Function to calculate hamming distance
 		int hammingDistance(int n1, int n2);
 	
-		void RNeighbors(std::vector<int> query, int radius, std::list<int>& neighbors, std::list<double>& neighbors_dists);
+		void RNeighbors(std::vector<double> query, int radius, std::list<int>& neighbors, std::list<double>& neighbors_dists);
 
 		/* Find theN nearest neighbors of a given point */
-		void nNeighbor(vector<int> query, int N, vector<pair<long double, int>>& near_items);
+		void nNeighbor(vector<double> query, int N, vector<pair<long double, int>>& near_items);
 
-		vector<std::vector<int>> get_data() { return this->data_vectors; }
+		vector<std::vector<double>> get_data() { return this->data_vectors; }
 };
 
 		

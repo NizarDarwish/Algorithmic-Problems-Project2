@@ -13,8 +13,11 @@ void LSH_Insert_Points_To_Buckets(LSH* info){
     //Fill buckets of Hash_Table
     for(int i=0;i<points_num;i++){
         for(int j=0;j<L_var;j++){
-            //Call function so as to compute all g_i values
-            vector<long long int> hash_values = info->Specific_Hash_Value(j, info->data[i]);
+            vector<double> data;
+            if (info->get_metric() == "discrete") data = info->Grid(j, info->data[i]);
+            else data = info->data[i];
+
+            vector<long long int> hash_values = info->Specific_Hash_Value(j, data);
             if(info->get_hashtables()[j][hash_values[0]]==NULL)
                 info->get_hashtables()[j][hash_values[0]] = new Bucket();
             info->get_hashtables()[j][hash_values[0]]->add((long long int) i , hash_values[0], hash_values[1]);

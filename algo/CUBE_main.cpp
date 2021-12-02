@@ -1,4 +1,3 @@
-#include "./Hypercube/Handling_input_cube.hpp"
 #include "./Hypercube/hypercube.hpp"
 
 class Hypercube;
@@ -45,7 +44,7 @@ int main(int argc, char *argv[]) {
             Output << "distanceTrue: " << NNB_result[neighbor] << endl << endl;
         }
 
-        Output << "tLSH: " << Hpb->ANN_time.count() << endl;
+        Output << "tCube: " << Hpb->ANN_time.count() << endl;
         Output << "tTrue: " << Hpb->NNB_time.count() << endl << endl;
 
         Output << "R-near neighbors:" << endl;

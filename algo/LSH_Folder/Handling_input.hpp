@@ -9,6 +9,6 @@
 
 using namespace std;
 
-void store_LSH_data(int, char**);
+void store_data(int, char**);
 
 #endif

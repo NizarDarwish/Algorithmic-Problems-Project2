@@ -58,6 +58,11 @@ class LSH {
         int w;
         vector<int> r;
 
+        double delta;
+        // Vector t for Gt (for shifting)
+        vector<double> shift;
+        string algorithm, metric;
+
         int R,N;
         long int hashtable_size;
         Euclidean_Hash_Function *Hash_Funs;
@@ -69,7 +74,7 @@ class LSH {
         duration<double, std::milli> ANN_time;
         duration<double, std::milli> NNB_time;
 
-        LSH(string, string, string, int L_, int N_, int k_, int R_, long long int n, int dim, vector<vector<double>>);
+        LSH(string, string, string, int L_, int N_, int k_, long long int n, int dim, vector<vector<double>>, double, string, string);
         ~LSH();
         int get_pointsnum() { return points_num; }
         long int get_hashtablesize() { return hashtable_size; }
@@ -78,6 +83,8 @@ class LSH {
         int get_k() { return k; }
         int get_N() { return N; }
         int get_R() { return R; }
+        string get_metric() { return metric; }
+        string get_algorithm() { return algorithm; }
         int get_dimension() { return dimension; }
         Bucket*** get_hashtables(){ return hashtables; }
         Euclidean_Hash_Function* get_hash_functions() { return Hash_Funs; }
@@ -89,6 +96,8 @@ class LSH {
         void print_buckets(); /* Used for Debugging */
 
         vector<pair<long double,int>> Search_by_range2(vector<double> query,long int R_custom);
+
+        vector<double> Grid(int, vector<double> );
 };
 
 void LSH_Insert_Points_To_Buckets(LSH* info); /* Initialize Data (Input) */
@@ -96,8 +105,6 @@ void LSH_Insert_Points_To_Buckets(LSH* info); /* Initialize Data (Input) */
 long long int mod(long long int, long int); /* This mod can handle negative values */
 
 void Print_values(); /* Used for Debugging */
-
-vector<int> Brute_by_range(vector<double> ); /* Used for Debugging */
 
 /* Finds the N-Nearest Items to the query using LSH hash function */
 vector<pair<long double, int>> Nearest_N_search(vector<double> );

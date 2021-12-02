@@ -131,7 +131,7 @@ class Hypercube{
 		duration<double, std::milli> ANN_time;
         duration<double, std::milli> NNB_time;
 
-		Hypercube(std::string input_, std::string query_, std::string output_,int R_,int k_,int threshold_, 
+		Hypercube(std::string input_, std::string query_, std::string output_,int k_,int threshold_, 
 		int points_num_,int N_,int space_,int max_probes_,std::vector<std::vector<double>> data_vectors_);
 
 		~Hypercube();

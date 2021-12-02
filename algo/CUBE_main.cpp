@@ -1,4 +1,3 @@
-#include "./Hypercube/Handling_input_cube.hpp"
 #include "./Hypercube/hypercube.hpp"
 
 class Hypercube;

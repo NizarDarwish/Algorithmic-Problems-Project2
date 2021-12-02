@@ -7,8 +7,8 @@ extern LSH *Lsh; /* LSH Object */
 int W;
 
 /* Initialize the variables used by the hash function */
-LSH::LSH(string input, string query, string output, int L_,int N_,int k_,int R_, long long int n, int dim, vector<vector<double>> Data)
-        :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), R(R_), points_num(n), dimension(dim)
+LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long long int n, int dim, vector<vector<double>> Data, double d, string method, string Algorithm)
+        :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), points_num(n), dimension(dim), delta(d), metric(method), algorithm(Algorithm)
     {
         data = Data;
         W = Calculate_w();
@@ -18,10 +18,19 @@ LSH::LSH(string input, string query, string output, int L_,int N_,int k_,int R_,
         Hash_Funs = new Euclidean_Hash_Function[L];
          //Declaration of hash tables...
         hashtables = new Bucket**[L];
+
+        // Initialize vector for shifting
+        random_device generator;
+	    uniform_real_distribution<double> dis(0.0, (double) d);
+
         for(int i=0;i<L;i++) {
             Hash_Funs[i] = Euclidean_Hash_Function(k, dim);
             hashtables[i] = new Bucket*[hashtable_size];
-            for(int j=0;j<hashtable_size;j++)   hashtables[i][j] = NULL;                
+            for(int j=0;j<hashtable_size;j++)   hashtables[i][j] = NULL;
+
+
+            double random = dis(generator);
+            shift.push_back(random);
         }
 
         // Every hash function uses a vector r length k
@@ -83,6 +92,39 @@ long long int mod(long long int value, long int Mod) {
         return (unsigned int) (value % Mod);
 }
 
+vector<double> LSH::Grid(int hashtable, vector<double> item) {
+    // pi = floor(item[i]/delta + 1/2) * delta
+
+    // Calculate G vector
+    // Snap
+    vector<pair<double, double>> p;
+    for (int dim = 0; dim < this->get_dimension(); dim++) {
+        double value = floor(item[dim]/this->delta + 1/2) * this->delta;
+        double time = floor(dim/this->delta + 1/2) * this->delta;
+        p.push_back(make_pair(time + shift[hashtable], value + shift[hashtable]));
+    }
+
+    for (auto it = p.begin(); it != p.end(); ++it) {
+        if ((it + 1) == p.end()) break;
+        if (it->first == (it + 1)->first && it->second == (it + 1)->second) {
+            p.erase(it);
+        }
+    }
+
+    vector<double> P;
+    for (auto it = p.begin(); it != p.end(); ++it) {
+        P.push_back(it->first);
+        P.push_back(it->second);
+    }
+
+    // Padding to 2d
+    for (int i = P.size(); i < 2*this->get_dimension(); i++) {
+        P.push_back(1000);
+    }
+
+    return P;
+}
+
 // Return the hash value for a specific query in a table
 vector<long long int> LSH::Specific_Hash_Value(int g, vector<double> item) {
     int L = this->get_L();
@@ -98,7 +140,7 @@ vector<long long int> LSH::Specific_Hash_Value(int g, vector<double> item) {
         vector <double> t = Hash_Fun.get_vector_t();
 
         /* The inner product is calculated by multiplying all the coordinates of 2 vectors and summing them */
-        for (int dim = 1; dim < this->get_dimension(); dim++) {
+        for (int dim = 0; dim < this->get_dimension(); dim++) {
             sum += item[dim] * v[dim];
         }
 
@@ -144,7 +186,7 @@ void Print_values() {
 */
 int LSH::Calculate_w() {
     long double sum = 0;
-    long int subpoints = this->points_num * 40/100;
+    long int subpoints = this->points_num * 5/100;
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {
@@ -212,7 +254,11 @@ vector<pair<long double, int>> Nearest_N_search(vector<double> query) {
 
     Bucket *** buckets = Lsh->get_hashtables();
 
+
     for (int g = 0; g < L; g++) {
+
+        if (Lsh->get_metric() == "discrete") query = Lsh->Grid(g, query);
+
         // Get the bucket the query belongs to
         vector<long long int> hash_value = Lsh->Specific_Hash_Value(g, query);
 
@@ -313,35 +359,6 @@ vector<std::pair<long double,int>> LSH::Search_by_range2(vector<double> query,lo
             if (iterations >= 100*L) break;
         }
     }
-
-    return near_items;
-}
-
-// For Debugging
-vector<int> Brute_by_range(vector<double> query) {
-    int L = Lsh->get_L();
-    int k = Lsh->get_k();
-    int R = Lsh->get_R();
-
-    vector<int> near_items;
-
-    auto begin = high_resolution_clock::now();
-
-    for (auto Item: Lsh->data) {
-        if (Item == query) continue;
-        long double euc_dist = euclidean_dis(Item, query);
-
-        if (euc_dist <= R) {
-            int index = Item.front();
-            near_items.push_back(index);
-        }
-    }
-
-    auto end = high_resolution_clock::now();
-
-    duration<double, std::milli> BSBR_time = end - begin;
-
-    cout << "BSBR TIME: " << BSBR_time.count() << endl;
 
     return near_items;
 }

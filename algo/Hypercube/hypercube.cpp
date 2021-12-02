@@ -2,9 +2,9 @@
 
 using namespace std;
 
-Hypercube::Hypercube(string input_, std::string query_, std::string output_,int R_,int k_,int threshold_, 
+Hypercube::Hypercube(string input_, std::string query_, std::string output_,int k_,int threshold_, 
 		int points_num_,int N_,int space_,int max_probes_,std::vector<std::vector<double>> data_vectors_) :input_file(input_), query_file(query_), output_file(output_),
-		R(R_),k(k_), threshold(threshold_), points_num(points_num_),N(N_),space(space_),max_probes(max_probes_),data_vectors(data_vectors_) {
+		k(k_), threshold(threshold_), points_num(points_num_),N(N_),space(space_),max_probes(max_probes_),data_vectors(data_vectors_) {
 			
             //measure the time that it takes to initialize the hypercube
             time_t start, finish;

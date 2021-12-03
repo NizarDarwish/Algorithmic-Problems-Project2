@@ -34,12 +34,12 @@ int main(int argc, char *argv[]) {
         auto end = high_resolution_clock::now();
         Lsh->ANN_time = end - begin;
 
-    //     begin = high_resolution_clock::now();
-    //     NNB_result = Nearest_N_brute(Lsh->data, Lsh->queries_data[query], Lsh->get_N());
-    //     end = high_resolution_clock::now();
-    //     Lsh->NNB_time = end - begin;
+        begin = high_resolution_clock::now();
+        NNB_result = Nearest_N_brute(Lsh->data, Lsh->queries_data[query], Lsh->get_N());
+        end = high_resolution_clock::now();
+        Lsh->NNB_time = end - begin;
 
-    //     SBR_result = Search_by_range(Lsh->queries_data[query]);
+        // SBR_result = Search_by_range(Lsh->queries_data[query]);
 
         Output << "Approximate Nearest neighbor: ";
         if (ANN_result.size() < 1)
@@ -47,10 +47,10 @@ int main(int argc, char *argv[]) {
         else
             Output << ANN_result[0].second << endl
             << "distanceLSH: " << ANN_result[0].first << endl;
-            // Output << "distanceTrue: " << NNB_result[neighbor] << endl << endl;
+            Output << "distanceTrue: " << NNB_result[0] << endl << endl;
 
         Output << "tLSH: " << Lsh->ANN_time.count() << endl;
-    //     Output << "tTrue: " << Lsh->NNB_time.count() << endl << endl;
+        Output << "tTrue: " << Lsh->NNB_time.count() << endl << endl;
 
     //     Output << "R-near neighbors:" << endl;
     //     for (auto point: SBR_result) {

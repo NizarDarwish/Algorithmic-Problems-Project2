@@ -119,7 +119,7 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
 
     // Padding to 2d
     for (int i = P.size(); i < 2*this->get_dimension(); i++) {
-        P.push_back(1000);
+        P.push_back(500);
     }
 
     return P;
@@ -257,10 +257,11 @@ vector<pair<long double, int>> Nearest_N_search(vector<double> query) {
 
     for (int g = 0; g < L; g++) {
 
-        if (Lsh->get_metric() == "discrete") query = Lsh->Grid(g, query);
+        vector<double> Gquery = query;
+        if (Lsh->get_metric() == "discrete") Gquery = Lsh->Grid(g, query);
 
         // Get the bucket the query belongs to
-        vector<long long int> hash_value = Lsh->Specific_Hash_Value(g, query);
+        vector<long long int> hash_value = Lsh->Specific_Hash_Value(g, Gquery);
 
         // if bucket is empty then skip it
         if (buckets[g][hash_value[0]] == NULL) continue;

@@ -103,7 +103,7 @@ vector<double> LSH::Filter_Curve(vector<double> item) {
     sum /= item.size();
 
     // Filter out some values
-    for (auto it = item.begin(); it != item.end() && (it + 1) == item.end(); ++it) {
+    for (auto it = item.begin(); it != item.end() && (it + 1) != item.end(); ++it) {
         if (abs(it[0] - (it + 1)[0]) < sum && abs((it + 1)[0] - (it + 2)[0]) < sum) {
             item.erase((it + 1));
         }
@@ -115,26 +115,43 @@ vector<double> LSH::Filter_Curve(vector<double> item) {
 vector<double> LSH::Grid(int hashtable, vector<double> item) {
     // pi = floor(item[i]/delta + 1/2) * delta
 
-    // Calculate G vector
-    // Snap
-    vector<pair<double, double>> p;
-    for (int dim = 0; dim < this->get_dimension(); dim++) {
-        double value = floor(item[dim]/this->delta + 1/2) * this->delta;
-        double time = floor(dim/this->delta + 1/2) * this->delta;
-        p.push_back(make_pair(time + shift[hashtable], value + shift[hashtable]));
-    }
-
-    for (auto it = p.begin(); it != p.end(); ++it) {
-        if ((it + 1) == p.end()) break;
-        if (it->first == (it + 1)->first && it->second == (it + 1)->second) {
-            p.erase(it);
-        }
-    }
 
     vector<double> P;
-    for (auto it = p.begin(); it != p.end(); ++it) {
-        P.push_back(it->first);
-        P.push_back(it->second);
+    if (this->get_metric() == "discrete") {
+        // Calculate G vector
+        // Snap
+        vector<pair<double, double>> p;
+        for (int dim = 0; dim < this->get_dimension(); dim++) {
+            double value = floor(item[dim]/this->delta + 1/2) * this->delta;
+            double time = floor(dim/this->delta + 1/2) * this->delta;
+            p.push_back(make_pair(time + shift[hashtable], value + shift[hashtable]));
+        }
+        for (auto it = p.begin(); it != p.end(); ++it) {
+            if ((it + 1) == p.end()) break;
+            if (it->first == (it + 1)->first && it->second == (it + 1)->second) {
+                p.erase(it);
+            }
+        }
+
+        // Unpack pairs
+        for (auto it = p.begin(); it != p.end(); ++it) {
+            P.push_back(it->first);
+            P.push_back(it->second);
+        }
+    } else if (this->get_metric() == "continuous") {
+        vector<double> p;
+        for (int dim = 0; dim < this->get_dimension(); dim++) {
+            double value = floor(item[dim]/this->delta + 1/2) * this->delta;
+            p.push_back(value);
+        }
+
+        for (auto it = p.begin(); it != p.end() && (it + 1) != p.end() && (it + 2) != p.end(); ++it) {
+            if (min(it[0], (it + 2)[0]) <= (it + 1)[0] && (it + 1)[0] <= max(it[0], (it + 2)[0])) {
+                p.erase((it + 1));
+            }
+        }
+
+        P = p;
     }
 
     // Padding to 2d

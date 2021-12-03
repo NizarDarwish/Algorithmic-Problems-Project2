@@ -98,6 +98,8 @@ class LSH {
         vector<pair<long double,int>> Search_by_range2(vector<double> query,long int R_custom);
 
         vector<double> Grid(int, vector<double> );
+
+        vector<double> Filter_Curve(vector<double> );
 };
 
 void LSH_Insert_Points_To_Buckets(LSH* info); /* Initialize Data (Input) */

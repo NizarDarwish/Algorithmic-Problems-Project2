@@ -92,6 +92,26 @@ long long int mod(long long int value, long int Mod) {
         return (unsigned int) (value % Mod);
 }
 
+vector<double> LSH::Filter_Curve(vector<double> item) {
+    // Calculate the Mean of steps and use the 5%
+    double sum = 0.0;
+    for (auto it = item.begin(); it != item.end(); ++it) {
+        if ((it + 1) == item.end()) break;
+        sum += abs(it[0] - (it + 1)[0]);
+    }
+
+    sum /= item.size();
+
+    // Filter out some values
+    for (auto it = item.begin(); it != item.end() && (it + 1) == item.end(); ++it) {
+        if (abs(it[0] - (it + 1)[0]) < sum && abs((it + 1)[0] - (it + 2)[0]) < sum) {
+            item.erase((it + 1));
+        }
+    }
+
+    return item;
+}
+
 vector<double> LSH::Grid(int hashtable, vector<double> item) {
     // pi = floor(item[i]/delta + 1/2) * delta
 
@@ -258,7 +278,7 @@ vector<pair<long double, int>> Nearest_N_search(vector<double> query) {
     for (int g = 0; g < L; g++) {
 
         vector<double> Gquery = query;
-        if (Lsh->get_metric() == "discrete") Gquery = Lsh->Grid(g, query);
+        if (Lsh->get_metric() == "discrete" || Lsh->get_metric() == "continuous") Gquery = Lsh->Grid(g, query);
 
         // Get the bucket the query belongs to
         vector<long long int> hash_value = Lsh->Specific_Hash_Value(g, Gquery);

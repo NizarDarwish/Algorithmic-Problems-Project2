@@ -27,6 +27,11 @@ int main(int argc, char *argv[]) {
     vector<int>                    SBR_result;
 
     for (int query = 0; query < queries; query++) {
+        // Filter the query curve
+        if (Lsh->get_metric() == "continuous") {
+            Lsh->queries_data[query] = Lsh->Filter_Curve(Lsh->queries_data[query]);
+        }
+
         Output << "Query: " << query << endl;
         Output << "Algorithm: " << Lsh->get_algorithm() << endl;
         auto begin = high_resolution_clock::now();

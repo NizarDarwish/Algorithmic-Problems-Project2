@@ -9,6 +9,6 @@
 
 using namespace std;
 
-vector<vector<int>> store_Cluster_data(int, char**);
+vector<vector<double>> store_Cluster_data(int, char**);
 
 #endif

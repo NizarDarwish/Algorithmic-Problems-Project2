@@ -69,6 +69,7 @@ void store_data(int argc,char** argv){
         cout << "Error: give a metric" << endl;
         exit (EXIT_FAILURE);
     } else if (algorithm == "LSH" || algorithm == "Hypercube") metric = "";
+    else if (metric == "continuous" && algorithm == "Frechet") L = 1;
 
     vector<vector<double>> vec;
     read_file(vec,input_file);

@@ -7,12 +7,13 @@ using std::chrono::duration;
 extern Cluster *cluster;
 extern LSH *Lsh;
 
-Cluster::Cluster(string input, string config, string out, bool comp, string method)
-                :input_file(input), config_file(config), output_file(out), complete(comp), Method(method) {
-                    
-                    read_config(config); // Read configuration file
-                    this->num_of_Items = num_of_points();
-                }
+Cluster::Cluster(string input, string config, string out, bool comp, string method, string assign, bool sil)
+                :input_file(input), config_file(config), output_file(out), complete(comp), Method(method),
+                 assignment(assign), silhouette(sil) {
+
+        read_config(config); // Read configuration file
+        this->num_of_Items = num_of_points();
+    }
 
 Cluster::~Cluster() {
     // Deallocate all memory
@@ -145,17 +146,17 @@ void Cluster::kMeanspp_Initialization() {
 /*
 * Find new centroid witch is the mean of all point in the cluster
 */
-vector<int> Cluster::Calculate_Mean(vector<int> near_points) {
+vector<double> Cluster::Calculate_Mean(vector<int> near_points) {
     long int T = near_points.size();
     int size = this->data[0].size();
-    vector<int> centroid(size, 0);
+    vector<double> centroid(size, 0.0);
     for (auto point: near_points) {
-        for(int i = 1; i < size; i++) {
+        for(int i = 0; i < size; i++) {
             centroid[i] += this->data[point][i];
         }
     }
 
-    for (int i = 1; i < size; i++) {
+    for (int i = 0; i < size; i++) {
             centroid[i] = centroid[i]/T;
     }
 
@@ -164,12 +165,12 @@ vector<int> Cluster::Calculate_Mean(vector<int> near_points) {
 
 // This function compares all new clusters to their previous
 // if the clusters have not changed much then return false else return true
-bool Cluster::Compare(vector<vector<int>> previous_clusters) {
+bool Cluster::Compare(vector<vector<double>> previous_clusters) {
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
         double sum_of_diff_points = 0.0;
         int size = previous_clusters[centroid].size();
         if (size == 0) return true;
-        for (int point = 1; point < size; point++) {
+        for (int point = 0; point < size; point++) {
             if (Lloyd[centroid].first[point] != previous_clusters[centroid][point]) {
                 sum_of_diff_points++;
             }
@@ -199,7 +200,9 @@ void Cluster::Lloyd_method() {
 
     auto begin = high_resolution_clock::now();
 
-    vector<vector<int>> previous_clusters(number_of_clusters, empty_vec);
+    vector<double> empty;
+    empty.clear();
+    vector<vector<double>> previous_clusters(number_of_clusters, empty);
     // Do this until there is almost no difference to the centroids
     while (Compare(previous_clusters)) {
         // Assign each point to its centroid
@@ -245,7 +248,7 @@ void Cluster::Silhouette() {
     vector<long double> sil(number_of_clusters, 0);
     auto begin = high_resolution_clock::now();
     // The first vector is the centroid and the second is a vector of indexes
-    vector<pair<vector<int>, vector<int>>> temp;
+    vector<pair<vector<double>, vector<int>>> temp;
     if(cluster->get_method() == "Classic" || cluster->get_method() == "Lloyd" ){
         temp = this->Lloyd;
     }else{
@@ -360,7 +363,7 @@ int Cluster::unassigned_count(){
 
 //compute the nearest center for a given vector
 
-int Cluster::nearest_centroid(vector<int> vec) {
+int Cluster::nearest_centroid(vector<double> vec) {
 	long int min_distance =  4294967291;
 	int nearest_centroid = -1;
 	// compute the distances to all the centroids
@@ -401,7 +404,7 @@ long int  Cluster::min_distance_between_centroids(){
 
 // This function computes the distance between the new and the previous centroids
 // if the distance is less than 0.1 to at least half the centroids then return false else return true
-bool Cluster::Compare1(vector<pair<vector<int>, vector<int>>> previous_clusters) {
+bool Cluster::Compare1(vector<pair<vector<double>, vector<int>>> previous_clusters) {
     int sum_of_diff_centroids = 0;
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
         int size = previous_clusters[centroid].first.size();
@@ -416,7 +419,7 @@ bool Cluster::Compare1(vector<pair<vector<int>, vector<int>>> previous_clusters)
 }
 
 // Check if the clusters changed
-bool Cluster::Check(vector<pair<vector<int>, vector<int>>> previous_clusters) {
+bool Cluster::Check(vector<pair<vector<double>, vector<int>>> previous_clusters) {
     int sum_of_diff_points = 0;
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
         if (previous_clusters[centroid].second.size() != reverse_centroids[centroid].second.size()) {
@@ -435,13 +438,23 @@ int Cluster::reverse_assignment(void) {
 
     auto begin = high_resolution_clock::now();
     
-      this->reverse_centroids.reserve(number_of_clusters);
+    this->reverse_centroids.reserve(number_of_clusters);
+
+    string method, metric = "";
+    if (Method == "LSH_Frechet") {
+        method = "Frechet";
+        metric = "discrete";
+    }
+    else if (Method == "LSH") {
+        method = "Mean_Vector";
+    }
+      
       if(Method=="LSH"){
-            //we dont care about R,query file and  N here
-            Lsh = new LSH(input_file, config_file, output_file, this->L, 5, this->k, 5, this->num_of_Items, dim_data(), this->data);
+            //we dont care about query file and  N here
+            Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric, method);
             LSH_Insert_Points_To_Buckets(Lsh);
         }else if(Method=="Hypercube"){
-            hypercube_ptr = new Hypercube(input_file,config_file, output_file, 5, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);
+            hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);
         }
 
     vector<int> empty_vec;
@@ -468,7 +481,9 @@ int Cluster::reverse_assignment(void) {
 	// keep track of unassinged points
 	int unassinged = 4294967291 - 1;
 
-    vector<pair<vector<int>, vector<int>>> previous_clusters(number_of_clusters, {empty_vec, empty_vec});
+    vector<double> empty;
+    empty.clear();
+    vector<pair<vector<double>, vector<int>>> previous_clusters(number_of_clusters, {empty, empty_vec});
 
 	// break the loop when all the balls contain no new vectors
 	while(Compare1(previous_clusters)) {
@@ -571,7 +586,7 @@ void Cluster::print() {
 }
 
 void Cluster::output() {
-    vector<pair<vector<int>, vector<int>>> temp;
+    vector<pair<vector<double>, vector<int>>> temp;
     if(cluster->get_method() == "Classic" || cluster->get_method() == "Lloyd" ){
         temp = this->Lloyd;
     }else{

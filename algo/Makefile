@@ -1,19 +1,19 @@
-all: search cube cluster
+all: search cluster
 
 CC = g++ #-O2
 FLAGS = -std=c++11 -c -g #-Wall
 
 OBJS1 = search_main.o functions.o Handling_input.o bucket.o LSH.o hypercube.o
-# OBJS2 = Cluster_main.o functions.o Handling_input_cluster.o Cluster.o LSH.o bucket.o hypercube.o
+OBJS2 = Cluster_main.o functions.o Handling_input_cluster.o Cluster.o LSH.o bucket.o hypercube.o
 
 EXEC1 = search
-# EXEC2 = cluster
+EXEC2 = cluster
 
 $(EXEC1): $(OBJS1)
 	$(CC)  $(OBJS1)  -o $(EXEC1)
 
-# $(EXEC2): $(OBJS2) 
-# 	$(CC)  $(OBJS2) -o $(EXEC2)
+$(EXEC2): $(OBJS2) 
+	$(CC)  $(OBJS2) -o $(EXEC2)
 
 Handling_input_cluster.o: kMeans++/Handling_input_cluster.cpp
 	$(CC) $(FLAGS) kMeans++/Handling_input_cluster.cpp

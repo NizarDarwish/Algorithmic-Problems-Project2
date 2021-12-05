@@ -67,7 +67,7 @@ LSH::~LSH() {
 
 void LSH::print_buckets() {
     for(int j=0; j < this->L; j++) {
-        for(long int i=0; i < this->hashtable_size; i++){
+        for(long int i=0; i < this->hashtable_size - 1100; i++){
             int counter = 0;
             if (hashtables[j][i] != NULL) {
                 cout << "Table " << j << " in Bucket " << i << endl;
@@ -78,6 +78,7 @@ void LSH::print_buckets() {
                     cout << "Hash value: " << point.second << endl;
                     counter++;
                 }
+                cout << endl;
             }
         }
     }
@@ -214,7 +215,7 @@ void Print_values() {
     //     cout << vec << ", ";  
     // cout << endl;
 
-    // Lsh->print_buckets();
+    Lsh->print_buckets();
 }
 
 /*

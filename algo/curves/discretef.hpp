@@ -6,4 +6,4 @@
 #include <limits>
 using namespace std;
 
-double discreteFrechetDistance( vector<double> curve_query, vector<double> curve);
+long double discreteFrechetDistance( vector<double> curve_query, vector<double> curve);

@@ -1,6 +1,6 @@
 #include "discretef.hpp"
 
-double discreteFrechetDistance( vector<double> curve_query, vector<double> curve){
+long double discreteFrechetDistance( vector<double> curve_query, vector<double> curve){
 	int curve_points_num,query_points_num,dimension,i,j,k,l;
     double euclidean_distance, max, min, distance_DFD,sum;
     
@@ -8,7 +8,7 @@ double discreteFrechetDistance( vector<double> curve_query, vector<double> curve
 
     query_points_num = curve.size();
 
-    double c[query_points_num+1][curve_points_num+1];
+    long double c[query_points_num+1][curve_points_num+1];
 	
 	// Discrete Frechet Distance
 	for( i=1; i<query_points_num+1; i++ )

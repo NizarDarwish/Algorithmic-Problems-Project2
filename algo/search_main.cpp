@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
         Lsh->ANN_time = end - begin;
 
         begin = high_resolution_clock::now();
-        NNB_result = Nearest_N_brute(Lsh->data, Lsh->queries_data[query], Lsh->get_N());
+        NNB_result = Nearest_N_brute(Lsh->data, Lsh->queries_data[query], Lsh->get_N(), Lsh->get_metric());
         end = high_resolution_clock::now();
         Lsh->NNB_time = end - begin;
 

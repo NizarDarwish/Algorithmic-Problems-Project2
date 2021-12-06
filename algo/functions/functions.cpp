@@ -117,13 +117,17 @@ long double euclidean_dis(vector<double> vec1, vector<double> vec2) {
 	return sqrt(dist);
 }
 
-vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> query, int N) {
+vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> query, int N, string Metric) {
     long double d = (double) BIG; // Minimum distance
 
     vector <double> near_items;
 
     for (auto Item: data) {
-        long double euc_dist = euclidean_dis(Item, query);
+        long double euc_dist;
+        if (Metric == "discrete")
+            euc_dist = discreteFrechetDistance(Item, query);
+        else
+            euc_dist = euclidean_dis(Item, query);
 
         if (euc_dist < d) {
             if (near_items.size() >= N) {

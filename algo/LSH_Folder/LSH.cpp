@@ -94,7 +94,7 @@ long long int mod(long long int value, long int Mod) {
 }
 
 vector<double> LSH::Filter_Curve(vector<double> item) {
-    // Calculate the Mean of steps and use the 5%
+    // Calculate the Mean of steps
     double sum = 0.0;
     for (auto it = item.begin(); it != item.end(); ++it) {
         if ((it + 1) == item.end()) break;
@@ -139,6 +139,11 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
             P.push_back(it->first);
             P.push_back(it->second);
         }
+
+        // Padding to 2d
+        for (int i = P.size(); i < 2*this->get_dimension(); i++) {
+            P.push_back(500);
+        }
     } else if (this->get_metric() == "continuous") {
         vector<double> p;
         for (int dim = 0; dim < this->get_dimension(); dim++) {
@@ -153,11 +158,11 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
         }
 
         P = p;
-    }
 
-    // Padding to 2d
-    for (int i = P.size(); i < 2*this->get_dimension(); i++) {
-        P.push_back(500);
+        // Padding to d
+        for (int i = P.size(); i < this->get_dimension(); i++) {
+            P.push_back(500);
+        }
     }
 
     return P;
@@ -232,7 +237,7 @@ int LSH::Calculate_w() {
         }
         sum /= (subpoints - point);
     }
-    set_w(sum);
+    set_w(220);
     return this->get_w();
 }
 
@@ -308,7 +313,11 @@ vector<pair<long double, int>> Nearest_N_search(vector<double> query) {
         for (auto Points: buckets[g][hash_value[0]]->points) {
             // index = Item_id of point in bucket
             int index = Points.first.first;
-            long double euc_dist = euclidean_dis(Lsh->data[index], query);
+            long double euc_dist;
+            if (Lsh->get_metric() == "discrete")
+                euc_dist = discreteFrechetDistance(Lsh->data[index], query);
+            else
+                euc_dist = euclidean_dis(Lsh->data[index], query);
 
             if (euc_dist < d) {
                 b = index;

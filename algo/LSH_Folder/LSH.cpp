@@ -237,7 +237,7 @@ int LSH::Calculate_w() {
         }
         sum /= (subpoints - point);
     }
-    set_w(220);
+    set_w(sum);
     return this->get_w();
 }
 

@@ -13,6 +13,8 @@
 using namespace std;
 
 #include "../curves/discretef.hpp"
+#include "../Fred-master/src/curve.hpp"
+#include "../Fred-master/src/frechet.hpp"
 
 long int dim_data(); /* Get the dimensions of the data */
 long int num_of_points(); /* Get the number of the items */
@@ -23,3 +25,5 @@ double Normal_distribution(); /* Generates a sequence of random normal numbers *
 vector <double> Nearest_N_brute(vector<vector<double>>, vector<double> , int, string);
 
 long double euclidean_dis(vector<double> , vector<double> ); /* Calculate Euclidean Distance */
+
+long double Continuous_Frechet(vector<double> , vector<double> );

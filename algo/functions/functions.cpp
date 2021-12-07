@@ -54,7 +54,7 @@ long int num_of_points() {
 	return num_of_lines;
 }
 
-void read_file(vector<vector<double>> &vec, string input_file){
+void read_file(vector<vector<double>> &vec, string input_file){ //, vector<string> &ids
     string line;
     if (dir_input == "") dir_input = input_file;
     ifstream Data_File(input_file);
@@ -66,6 +66,7 @@ void read_file(vector<vector<double>> &vec, string input_file){
 
             string first_item;
             s >> first_item;
+            // ids.push_back(first_item);
             double d;
             vector<double> v1;
 
@@ -126,6 +127,8 @@ vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> quer
         long double euc_dist;
         if (Metric == "discrete")
             euc_dist = discreteFrechetDistance(Item, query);
+        else if (Metric == "continuous")
+            euc_dist = Continuous_Frechet(Item, query);
         else
             euc_dist = euclidean_dis(Item, query);
 
@@ -140,4 +143,28 @@ vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> quer
     }
 
     return near_items;
+}
+
+long double Continuous_Frechet(vector<double> Item, vector<double> query) {
+    Curve Item_curve(1);
+    for (int point = 0; point < Item.size(); point++) {
+        Point Item_point(1);
+        Item_point.set(0, Item[point]);
+        Item_curve.push_back(Item_point);
+    }
+
+    Curve query_curve(1);
+    for (int point = 0; point < query.size(); point++) {
+        Point query_point(1);
+        query_point.set(0, query[point]);
+        query_curve.push_back(query_point);
+    }
+
+    // continuous frechet distance
+    long double dist = Frechet::Continuous::distance(Item_curve, query_curve).value;
+
+    // delete(Item_curve);
+    // delete(query_curve);
+
+    return dist;
 }

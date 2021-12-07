@@ -449,13 +449,13 @@ int Cluster::reverse_assignment(void) {
         method = "Mean_Vector";
     }
       
-      if(Method=="LSH"){
-            //we dont care about query file and  N here
-            Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric, method);
-            LSH_Insert_Points_To_Buckets(Lsh);
-        }else if(Method=="Hypercube"){
-            hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);
-        }
+    if(Method=="LSH"){
+        //we dont care about query file and  N here
+        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric, method);
+        LSH_Insert_Points_To_Buckets(Lsh);
+    }else if(Method=="Hypercube"){
+        hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);
+    }
 
     vector<int> empty_vec;
     empty_vec.clear();

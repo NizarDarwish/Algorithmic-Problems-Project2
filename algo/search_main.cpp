@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     vector<double>                 NNB_result;
     vector<int>                    SBR_result;
 
-    for (int query = 0; query < queries; query++) {
+    for (int query = 0; query < 10 /* queries */; query++) {
         // Filter the query curve
         if (Lsh->get_metric() == "continuous") {
             Lsh->queries_data[query] = Lsh->Filter_Curve(Lsh->queries_data[query]);

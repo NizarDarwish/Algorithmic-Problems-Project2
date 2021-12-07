@@ -116,7 +116,6 @@ vector<double> LSH::Filter_Curve(vector<double> item) {
 vector<double> LSH::Grid(int hashtable, vector<double> item) {
     // pi = floor(item[i]/delta + 1/2) * delta
 
-
     vector<double> P;
     if (this->get_metric() == "discrete") {
         // Calculate G vector
@@ -161,7 +160,7 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
 
         // Padding to d
         for (int i = P.size(); i < this->get_dimension(); i++) {
-            P.push_back(500);
+            P.push_back(1000);
         }
     }
 
@@ -316,6 +315,8 @@ vector<pair<long double, int>> Nearest_N_search(vector<double> query) {
             long double euc_dist;
             if (Lsh->get_metric() == "discrete")
                 euc_dist = discreteFrechetDistance(Lsh->data[index], query);
+            else if (Lsh->get_metric() == "continuous")
+                euc_dist = Continuous_Frechet(Lsh->data[index], query);
             else
                 euc_dist = euclidean_dis(Lsh->data[index], query);
 

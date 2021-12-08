@@ -157,7 +157,7 @@ vector<double> Cluster::Calculate_Mean(vector<int> near_points) {
     }
 
     for (int i = 0; i < size; i++) {
-            centroid[i] = centroid[i]/T;
+            centroid[i] = centroid[i] / (T > 0 ? T : 1);
     }
 
     return centroid;
@@ -283,7 +283,7 @@ void Cluster::Silhouette() {
                 }
             }
 
-            a /= (size_of_cluster-1); // average distance of i to objects in same cluster
+            a /= size_of_cluster-1 > 0 ? (size_of_cluster-1) : 1; // average distance of i to objects in same cluster
 
             // Find Second closest centroid
             long double dist = NUM;
@@ -319,10 +319,11 @@ void Cluster::Silhouette() {
                 }
             }
 
-            b /= (temp[sec_cluster].second.size()-1);
+            b /= (temp[sec_cluster].second.size()-1) > 0 ? (temp[sec_cluster].second.size()-1) : 1;
 
             // Calculate Silhouette
             sil[cluster] += (b - a) / (b > a ? b : a);
+            // cout << a << " " << b << " " << sil[cluster] << endl;
         }
 
         sil[cluster] /= size_of_cluster;

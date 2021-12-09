@@ -573,7 +573,12 @@ int Cluster::reverse_assignment(void) {
                     reverse_centroids[centroid].first = Calculate_Mean(reverse_centroids[centroid].second);
             }
         }else if (Method == "LSH_Frechet") {
-
+            for (int centroid = 0; centroid < number_of_clusters; centroid++) {
+                previous_clusters[centroid].first = reverse_centroids[centroid].first;
+                if(this->reverse_centroids[centroid].second.size() != 0){
+                    reverse_centroids[centroid].first = create_mean_curve_tree(this->reverse_centroids[centroid].second, this->reverse_centroids[centroid].first);
+                }
+            }
         }
 	}
     
@@ -581,7 +586,7 @@ int Cluster::reverse_assignment(void) {
     Cluster_time = end - begin;
 };
 
-int min3_index(double a, double b, double c) {
+int Cluster::min3_index(double a, double b, double c){
 	int index;
 	double curr_min;
 	if (a <= b) {
@@ -598,7 +603,7 @@ int min3_index(double a, double b, double c) {
 	return index;
 }
 
-vector<pair<double,double>> optimal_Traversal_Computation(vector<double> P, vector<double> Q) {
+vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double> P, vector<double> Q) {
 
     long double** L = create_DFD_Table(P, Q);
 
@@ -642,7 +647,7 @@ vector<pair<double,double>> optimal_Traversal_Computation(vector<double> P, vect
     return traversal;
 }
 
-vector<double>* mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q) {
+vector<double> Cluster::mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q) {
 	vector<pair<double,double>> traversal = optimal_Traversal_Computation(P, Q);
 	int points_num = traversal.size();
 	vector<double> mean_curve;
@@ -655,10 +660,11 @@ vector<double>* mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q) 
 		//mean_points[points_num-1-i].print();
 	}
 
-	return &mean_curve;
+    traversal.clear();
+	return mean_curve;
 }
 
-void postOrderPrint(TreeNode* node) {
+void Cluster::postOrderPrint(TreeNode* node) {
 	if (node->left!= NULL) {
 	    std::cout << "LEFT" << endl;
 		postOrderPrint(node->left);
@@ -671,17 +677,17 @@ void postOrderPrint(TreeNode* node) {
 	//node->curve->CurvePrint();
 }
 
-vector<double>* create_mean_curve_tree(vector<int> cluster, vector<double> center,vector<vector<double>> data_curves) {
+vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<double> center) {
 
     //if cluster is empty
     if (cluster.size() == 0 || cluster.size() == 1)
-        return &center;
+        return center;
 
     vector<TreeNode*> curr_node;
 
     // Start with original curves as leaves
     for (int i = 0 ; i < cluster.size() ; i++){
-        curr_node.push_back(new TreeNode(&data_curves[cluster[i]]));
+        curr_node.push_back(new TreeNode( &this->data[cluster[i]] ));
     }
 
     vector<TreeNode*> nextNodes;
@@ -692,8 +698,8 @@ vector<double>* create_mean_curve_tree(vector<int> cluster, vector<double> cente
         for (int i = 0 ; i < curr_node.size() - 1; i+=2) {
             vector<double> P = *(curr_node[i]->curve_id);
             vector<double> Q = *(curr_node[i+1]->curve_id);
-            vector<double>* mean_curve = mean_Discrete_Frechet_Curve(P, Q);
-            TreeNode* mean_node = new TreeNode(mean_curve, curr_node[i], curr_node[i+1]);
+            vector<double> mean_curve = mean_Discrete_Frechet_Curve(P, Q);
+            TreeNode* mean_node = new TreeNode(&mean_curve, curr_node[i], curr_node[i+1]);
             nextNodes.push_back(mean_node);
         }
 
@@ -706,11 +712,10 @@ vector<double>* create_mean_curve_tree(vector<int> cluster, vector<double> cente
     }
 
     //postOrderPrint(curr_node[0]);
-
     //curr_node[0]->curve->CurvePrint();
 
     //update centroid - return root total node
-    return curr_node[0]->curve_id;
+    return *(curr_node[0]->curve_id);
 }
 
 void Cluster::print() {

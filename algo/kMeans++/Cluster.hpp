@@ -22,6 +22,24 @@
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
+struct TreeNode {
+	vector<double>* curve_id;
+	TreeNode* left;
+	TreeNode* right;
+
+	TreeNode(vector<double>* curve, TreeNode* left = NULL, TreeNode* right = NULL) {
+		this->curve_id = curve;
+		this->left = left;
+		this->right = right;
+	}
+
+	bool isLeaf() {
+		if (left == NULL && right == NULL)
+			return true;
+		else
+			return false;
+	}
+};
 
 class Cluster {
     private:
@@ -78,25 +96,11 @@ class Cluster {
         int nearest_centroid(vector<double> vec);
         long int  min_distance_between_centroids(void);
         int reverse_assignment(void);
-};
-
-struct TreeNode {
-	vector<double>* curve_id;
-	TreeNode* left;
-	TreeNode* right;
-
-	TreeNode(vector<double>* curve, TreeNode* left = NULL, TreeNode* right = NULL) {
-		this->curve_id = curve;
-		this->left = left;
-		this->right = right;
-	}
-
-	bool isLeaf() {
-		if (left == NULL && right == NULL)
-			return true;
-		else
-			return false;
-	}
+        vector<double> create_mean_curve_tree(vector<int> cluster, vector<double> center);
+        vector<double> mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q);
+        vector<pair<double,double>> optimal_Traversal_Computation(vector<double> P, vector<double> Q);
+        int min3_index(double a, double b, double c);
+        void postOrderPrint(TreeNode* node);
 };
 
 #endif

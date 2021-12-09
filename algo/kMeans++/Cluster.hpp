@@ -80,4 +80,23 @@ class Cluster {
         int reverse_assignment(void);
 };
 
+struct TreeNode {
+	vector<double>* curve_id;
+	TreeNode* left;
+	TreeNode* right;
+
+	TreeNode(vector<double>* curve, TreeNode* left = NULL, TreeNode* right = NULL) {
+		this->curve_id = curve;
+		this->left = left;
+		this->right = right;
+	}
+
+	bool isLeaf() {
+		if (left == NULL && right == NULL)
+			return true;
+		else
+			return false;
+	}
+};
+
 #endif

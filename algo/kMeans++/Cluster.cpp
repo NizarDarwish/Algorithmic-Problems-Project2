@@ -733,6 +733,10 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
             vector<double> P = *(curr_node[i]->curve_id);
             vector<double> Q = *(curr_node[i+1]->curve_id);
             vector<double> mean_curve = mean_Discrete_Frechet_Curve(P, Q);
+            if (mean_curve.size() > size_t (120)) {
+                mean_curve.erase(mean_curve.begin() + 120, mean_curve.end());
+            }
+
             TreeNode* mean_node = new TreeNode(&mean_curve, curr_node[i], curr_node[i+1]);
             nextNodes.push_back(mean_node);
         }

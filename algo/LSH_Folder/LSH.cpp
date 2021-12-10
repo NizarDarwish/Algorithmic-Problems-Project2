@@ -395,10 +395,7 @@ vector<std::pair<long double,int>> LSH::Search_by_range2(vector<double> query,lo
         if (Lsh->get_metric() == "discrete" || Lsh->get_metric() == "continuous") Gquery = Lsh->Grid(g, query);
 
         vector<long long int> hash_value;
-        if (Lsh->get_metric() == "discrete" || Lsh->get_metric() == "continuous")
-            hash_value = Lsh->Specific_Hash_Value(g, Gquery);
-        else
-            hash_value = Lsh->Specific_Hash_Value(g, query);
+        hash_value = Lsh->Specific_Hash_Value(g, Gquery);
 
         if (buckets[g][hash_value[0]] == NULL)
             continue;
@@ -406,7 +403,7 @@ vector<std::pair<long double,int>> LSH::Search_by_range2(vector<double> query,lo
         for (auto Points: buckets[g][hash_value[0]]->points) {
             iterations++;
             int index = Points.first.first;
-            //long double euc_dist = euclidean_dis(Lsh->data[index], query);
+
             long double euc_dist;
             if (Lsh->get_metric() == "discrete")
                 euc_dist = discreteFrechetDistance(Lsh->data[index], query);
@@ -421,6 +418,6 @@ vector<std::pair<long double,int>> LSH::Search_by_range2(vector<double> query,lo
             if (iterations >= 100*L) break;
         }
     }
-    //cout << "ok5" << endl;
+
     return near_items;
 }

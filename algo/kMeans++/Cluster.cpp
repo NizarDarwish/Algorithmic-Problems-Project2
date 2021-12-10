@@ -100,7 +100,10 @@ void Cluster::kMeanspp_Initialization() {
                 // Find the closest centroid to the point
                 for (auto centroid: this->centroids) {
                     long double point_dist;
-                    point_dist = euclidean_dis(this->data[point], this->data[centroid]);
+                    if (this->assignment == "Mean_Frechet")
+                        point_dist = discreteFrechetDistance(this->data[point], this->data[centroid]);
+                    else
+                        point_dist = euclidean_dis(this->data[point], this->data[centroid]);
 
                     if (point_dist < dis) {
                         dis = point_dist;
@@ -275,9 +278,13 @@ void Cluster::Silhouette() {
                         if (it != dists.end()) {
                             a += it->second;
                         } else {
-                            long double euc_dis = euclidean_dis(this->data[i], this->data[j]);
-                            a += euc_dis;
-                            dists[to_string(i)+to_string(j)] = euc_dis;
+                            long double dis;
+                            if (this->assignment == "Mean_Frechet")
+                                dis = discreteFrechetDistance(this->data[i], this->data[j]);
+                            else
+                                dis = euclidean_dis(this->data[i], this->data[j]);
+                            a += dis;
+                            dists[to_string(i)+to_string(j)] = dis;
                         }
                     }
                 }
@@ -290,7 +297,11 @@ void Cluster::Silhouette() {
             int sec_cluster = -1;
             for (int second_cluster = 0; second_cluster < number_of_clusters; second_cluster++) {
                 if (cluster != second_cluster) {
-                    long double point_dist = euclidean_dis(this->data[i], temp[second_cluster].first);
+                    long double point_dist;
+                    if (this->assignment == "Mean_Frechet")
+                        point_dist = discreteFrechetDistance(this->data[i], temp[second_cluster].first);
+                    else
+                        point_dist = euclidean_dis(this->data[i], temp[second_cluster].first);
                     if (dist > point_dist) {
                         sec_cluster = second_cluster;
                         dist = point_dist;
@@ -311,9 +322,14 @@ void Cluster::Silhouette() {
                         if (it != dists.end()) {
                             b += it->second;
                         } else {
-                            long double euc_dis = euclidean_dis(this->data[i], this->data[j]);
-                            b += euc_dis;
-                            dists[to_string(i)+to_string(j)] = euc_dis;
+                            long double point_dist;
+                            if (this->assignment == "Mean_Frechet")
+                                point_dist = discreteFrechetDistance(this->data[i], this->data[j]);
+                            else
+                                point_dist = euclidean_dis(this->data[i], this->data[j]);
+
+                            b += point_dist;
+                            dists[to_string(i)+to_string(j)] = point_dist;
                         }
                     }
                 }
@@ -369,7 +385,11 @@ int Cluster::nearest_centroid(vector<double> vec) {
 	int nearest_centroid = -1;
 	// compute the distances to all the centroids
 	for (int i = 0; i < number_of_clusters; i++) {
-		long int temp_distance = euclidean_dis(vec, this->reverse_centroids[i].first);
+        long double temp_distance;
+        if (this->assignment == "Mean_Frechet")
+            temp_distance = discreteFrechetDistance(vec, this->reverse_centroids[i].first);
+        else
+		    temp_distance = euclidean_dis(vec, this->reverse_centroids[i].first);
 
 		// set it as min
 		if (temp_distance < min_distance) {
@@ -383,7 +403,7 @@ int Cluster::nearest_centroid(vector<double> vec) {
 };
 
 // Compute the minimum of the distances of the centroids. Needed for the initialization of the radius in reverse assignment
-long int  Cluster::min_distance_between_centroids(){
+long int Cluster::min_distance_between_centroids(){
 
 	// initialize the minimum distance
 	long int min_distance = 4294967291;
@@ -393,7 +413,11 @@ long int  Cluster::min_distance_between_centroids(){
 	for(int i = 0; i < number_of_clusters; i++){
 		for(int j = 0; j < number_of_clusters; j++){
 			if (i != j) {
-				long int temp_distance = euclidean_dis(this->reverse_centroids[i].first, this->reverse_centroids[j].first);
+                long double temp_distance;
+                if (this->assignment == "Mean_Frechet")
+                    temp_distance = discreteFrechetDistance(this->reverse_centroids[i].first, this->reverse_centroids[j].first);
+                else
+				    temp_distance = euclidean_dis(this->reverse_centroids[i].first, this->reverse_centroids[j].first);
 				if (temp_distance < min_distance)
 					min_distance = temp_distance;
 			}
@@ -410,7 +434,11 @@ bool Cluster::Compare1(vector<pair<vector<double>, vector<int>>> previous_cluste
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
         int size = previous_clusters[centroid].first.size();
         if (size == 0) return true;
-        long double dist = euclidean_dis(previous_clusters[centroid].first, reverse_centroids[centroid].first);
+        long double dist;
+        if (this->assignment == "Mean_Frechet")
+            dist = discreteFrechetDistance(previous_clusters[centroid].first, reverse_centroids[centroid].first);
+        else
+            dist = euclidean_dis(previous_clusters[centroid].first, reverse_centroids[centroid].first);
         if (dist < 0.1)
             sum_of_diff_centroids++;
     }
@@ -530,8 +558,12 @@ int Cluster::reverse_assignment(void) {
                     int current_vector = iter->second;
                     if(assigned_centroid.at(current_vector) != -1) {
                         // check if its distance from the current centroid, is less than the previous' one
-                        int assigned_prev = assigned_centroid.at(current_vector); 
-                        int prev_distance = euclidean_dis(data.at(current_vector), this->reverse_centroids[assigned_prev].first);
+                        int assigned_prev = assigned_centroid.at(current_vector);
+                        int prev_distance;
+                        if (this->assignment == "Mean_Frechet")
+                            prev_distance = discreteFrechetDistance(data.at(current_vector), this->reverse_centroids[assigned_prev].first);
+                        else
+                            prev_distance = euclidean_dis(data.at(current_vector), this->reverse_centroids[assigned_prev].first);
                         int new_distance = iter->first;
 
                         // if it is, it is closest to the current centroid, thus change the asssigned value in the temp vector
@@ -548,7 +580,7 @@ int Cluster::reverse_assignment(void) {
                     }
                 }
             }
-            cout << "ok6" << endl;
+
             // update the unassigned vectors count
             unassigned_prev = unassinged;
             unassinged = unassigned_count();
@@ -567,7 +599,6 @@ int Cluster::reverse_assignment(void) {
             }
         }
 
-        cout << "ok5" << endl;
         if (this->assignment == "Mean_Vector") {
             //Update centroids
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
@@ -576,7 +607,6 @@ int Cluster::reverse_assignment(void) {
                     reverse_centroids[centroid].first = Calculate_Mean(reverse_centroids[centroid].second);
             }
         }else if (this->assignment == "Mean_Frechet") {
-            cout << "ok4" << endl;
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
                 previous_clusters[centroid].first = reverse_centroids[centroid].first;
                 if(this->reverse_centroids[centroid].second.size() != 0){
@@ -584,7 +614,6 @@ int Cluster::reverse_assignment(void) {
                 }
             }
         }
-        cout << "ok1" << endl;
 	}
     
 	auto end = high_resolution_clock::now();
@@ -609,7 +638,6 @@ int Cluster::min3_index(double a, double b, double c){
 }
 
 vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double> P, vector<double> Q) {
-    cout << "ok3" << endl;
     long double** L = create_DFD_Table(P, Q);
     //long double **L = this->array_C;
 
@@ -667,7 +695,6 @@ vector<double> Cluster::mean_Discrete_Frechet_Curve(vector<double> P, vector<dou
 	}
 
     traversal.clear();
-    cout << "ok2" << endl;
 	return mean_curve;
 }
 

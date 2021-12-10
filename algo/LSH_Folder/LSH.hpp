@@ -89,6 +89,7 @@ class LSH {
         Bucket*** get_hashtables(){ return hashtables; }
         Euclidean_Hash_Function* get_hash_functions() { return Hash_Funs; }
         void set_w(int value) { w = value; }
+        vector<std::pair<long double,int>> Search_by_range3(vector<double> query,long int R_custom);
 
         int Calculate_w();
         vector<long long int> Specific_Hash_Value(int g, vector<double> item);

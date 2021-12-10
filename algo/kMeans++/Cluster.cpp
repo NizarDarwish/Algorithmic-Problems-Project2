@@ -450,7 +450,7 @@ int Cluster::reverse_assignment(void) {
         method = "Mean_Vector";
     }
       
-    if(Method=="LSH"){
+    if(Method=="LSH"||Method=="LSH_Frechet"){
         //we dont care about query file and  N here
         Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric, method);
         LSH_Insert_Points_To_Buckets(Lsh);
@@ -520,6 +520,8 @@ int Cluster::reverse_assignment(void) {
                     }
                     neighbors.clear();
                     neighbors_dists.clear();
+                }else if (Method == "LSH_Frechet"){
+                    near_items = Lsh->Search_by_range2(this->reverse_centroids[i].first,radius);
                 }
 
                 for (auto iter = near_items.begin(); iter != near_items.end(); iter++){
@@ -546,7 +548,7 @@ int Cluster::reverse_assignment(void) {
                     }
                 }
             }
-
+            cout << "ok6" << endl;
             // update the unassigned vectors count
             unassigned_prev = unassinged;
             unassinged = unassigned_count();
@@ -565,14 +567,16 @@ int Cluster::reverse_assignment(void) {
             }
         }
 
-        if (Method == "LSH") {
+        cout << "ok5" << endl;
+        if (this->assignment == "Mean_Vector") {
             //Update centroids
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
                 previous_clusters[centroid].first = reverse_centroids[centroid].first;
                 if(this->reverse_centroids[centroid].second.size() != 0)
                     reverse_centroids[centroid].first = Calculate_Mean(reverse_centroids[centroid].second);
             }
-        }else if (Method == "LSH_Frechet") {
+        }else if (this->assignment == "Mean_Frechet") {
+            cout << "ok4" << endl;
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
                 previous_clusters[centroid].first = reverse_centroids[centroid].first;
                 if(this->reverse_centroids[centroid].second.size() != 0){
@@ -580,6 +584,7 @@ int Cluster::reverse_assignment(void) {
                 }
             }
         }
+        cout << "ok1" << endl;
 	}
     
 	auto end = high_resolution_clock::now();
@@ -604,8 +609,9 @@ int Cluster::min3_index(double a, double b, double c){
 }
 
 vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double> P, vector<double> Q) {
-
+    cout << "ok3" << endl;
     long double** L = create_DFD_Table(P, Q);
+    //long double **L = this->array_C;
 
     int i = P.size();
     int j = Q.size();
@@ -613,7 +619,7 @@ vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double
     vector<pair<double,double>> traversal;
 
     // put at the end of the vector, so we will read it in reverse afterwards
-    traversal.push_back(make_pair(P[i], Q[j]));
+    traversal.push_back(make_pair(P[j],Q[i]));
 
     while (i != 0 && j != 0) {
         int min_index = min3_index(L[i-1][j], L[i][j-1], L[i-1][j-1]);
@@ -661,6 +667,7 @@ vector<double> Cluster::mean_Discrete_Frechet_Curve(vector<double> P, vector<dou
 	}
 
     traversal.clear();
+    cout << "ok2" << endl;
 	return mean_curve;
 }
 
@@ -694,7 +701,7 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
 
     while(curr_node.size()>1){
     // Take curves in pairs
-        //step 2 becasue we have binary tree
+        //step 2 because we have binary tree
         for (int i = 0 ; i < curr_node.size() - 1; i+=2) {
             vector<double> P = *(curr_node[i]->curve_id);
             vector<double> Q = *(curr_node[i+1]->curve_id);
@@ -709,6 +716,7 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
 
         curr_node = nextNodes;
         nextNodes.clear();
+
     }
 
     //postOrderPrint(curr_node[0]);

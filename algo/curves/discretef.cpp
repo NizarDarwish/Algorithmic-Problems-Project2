@@ -4,9 +4,9 @@ long double discreteFrechetDistance( vector<double> curve_query, vector<double> 
 	int curve_points_num,query_points_num,dimension,i,j,k,l;
     double euclidean_distance, max, min, distance_DFD,sum;
     
-    curve_points_num = curve_query.size();
+    query_points_num = curve_query.size();
 
-    query_points_num = curve.size();
+    curve_points_num = curve.size();
 
     long double c[query_points_num+1][curve_points_num+1];
 	
@@ -66,13 +66,13 @@ long double** create_DFD_Table( vector<double> curve_query, vector<double> curve
 	int curve_points_num,query_points_num,dimension,i,j,k,l;
     double euclidean_distance, max, min, distance_DFD,sum;
     
-    curve_points_num = curve_query.size();
+    query_points_num = curve_query.size();
 
-    query_points_num = curve.size();
+    curve_points_num = curve.size();
 
-	long double **c = new long double*[query_points_num];
-	for(int i = 0; i <query_points_num; ++i)
-    	c[i] = new long double[query_points_num+1];
+	long double **c = new long double*[query_points_num+1];
+	for(int i = 0; i <=query_points_num; ++i)
+    	c[i] = new long double[curve_points_num+1];
 	
 	// Discrete Frechet Distance
 	for( i=1; i<query_points_num+1; i++ )

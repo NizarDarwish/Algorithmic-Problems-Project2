@@ -169,6 +169,7 @@ vector<double> Cluster::Calculate_Mean(vector<int> near_points) {
 // This function compares all new clusters to their previous
 // if the clusters have not changed much then return false else return true
 bool Cluster::Compare(vector<vector<double>> previous_clusters) {
+    int counter = 0;
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
         double sum_of_diff_points = 0.0;
         int size = previous_clusters[centroid].size();
@@ -180,9 +181,11 @@ bool Cluster::Compare(vector<vector<double>> previous_clusters) {
         }
 
         // If 10% of the cluster has changed return true
-        double percentage = sum_of_diff_points/(double) (size - 1);
-        if (percentage >= 0.01) return true;
+        double percentage = (double)sum_of_diff_points/(double) (size - 1);
+        if (percentage >= 0.01) counter++;
     }
+
+    if (counter <= number_of_clusters/2) return true;
 
     return false;
 }
@@ -217,7 +220,12 @@ void Cluster::Lloyd_method() {
             int point_centroid = -1;
             if (none_of(this->centroids.begin(), this->centroids.end(), [point](int centroid) { return point == centroid; })) {
                 for (int centroid = 0; centroid < number_of_clusters; centroid++) {
-                    long double point_dist = euclidean_dis(this->data[point], Lloyd[centroid].first);
+                    long double point_dist;
+                    if (this->assignment == "Mean_Frechet")
+                        point_dist = discreteFrechetDistance(this->data[point], Lloyd[centroid].first);
+                    else
+                        point_dist = euclidean_dis(this->data[point], Lloyd[centroid].first);
+
                     if (point_dist < dis) {
                         dis = point_dist;
                         point_centroid = centroid;
@@ -230,10 +238,18 @@ void Cluster::Lloyd_method() {
 
         // Store previous clusters before Updating them
         // Update centroids
-        for (int centroid = 0; centroid < number_of_clusters; centroid++) {
-            previous_clusters[centroid].clear();
-            previous_clusters[centroid] = Lloyd[centroid].first;
-            Lloyd[centroid].first = Calculate_Mean(Lloyd[centroid].second);
+        if (this->assignment == "Mean_Vector") {
+            for (int centroid = 0; centroid < number_of_clusters; centroid++) {
+                previous_clusters[centroid].clear();
+                previous_clusters[centroid] = Lloyd[centroid].first;
+                Lloyd[centroid].first = Calculate_Mean(Lloyd[centroid].second);
+            }
+        } else if (this->assignment == "Mean_Frechet") {
+            for (int centroid = 0; centroid < number_of_clusters; centroid++) {
+                previous_clusters[centroid].clear();
+                previous_clusters[centroid] = Lloyd[centroid].first;
+                Lloyd[centroid].first = create_mean_curve_tree(Lloyd[centroid].second, Lloyd[centroid].first);
+            }
         }
 
         centroids.clear();
@@ -733,6 +749,12 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
             vector<double> P = *(curr_node[i]->curve_id);
             vector<double> Q = *(curr_node[i+1]->curve_id);
             vector<double> mean_curve = mean_Discrete_Frechet_Curve(P, Q);
+            long int dim = dim_data();
+            if (mean_curve.size() > size_t (dim)) {
+                mean_curve.erase(mean_curve.begin() + dim, mean_curve.end());
+            }
+            cout << mean_curve.size() << endl;
+
             TreeNode* mean_node = new TreeNode(&mean_curve, curr_node[i], curr_node[i+1]);
             nextNodes.push_back(mean_node);
         }

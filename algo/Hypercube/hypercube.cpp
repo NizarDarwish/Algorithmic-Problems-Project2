@@ -63,9 +63,9 @@ Hypercube::~Hypercube() {
         this->hypercube[bucket_id].clear();
     }
 
-    delete H_i_ptr;
-
     data_vectors.clear();
+    query_data.clear();
+    delete H_i_ptr;
 };
 
 int Hypercube::hypercube_hash(std::vector<double> vec_point){
@@ -171,6 +171,7 @@ void Hypercube::RNeighbors(std::vector<double> query, int radius, std::list<int>
         if(neighbors_num == this->threshold)
             break;
     } // end for - Probes
+    Neighbor_Vertices.clear();
 }
 
 void Hypercube::nNeighbor(vector<double> query, int N, vector<pair<long double, int>>& near_items){

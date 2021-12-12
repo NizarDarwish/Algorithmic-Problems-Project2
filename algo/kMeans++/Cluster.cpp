@@ -42,6 +42,8 @@ Cluster::~Cluster() {
     }
 
     if (centroids.size() > 0) centroids.clear();
+
+    delete hypercube_ptr;
 }
 
 void Cluster::read_config(string config_file) {
@@ -642,6 +644,8 @@ int Cluster::reverse_assignment(void) {
     
 	auto end = high_resolution_clock::now();
     Cluster_time = end - begin;
+
+    assigned_new.clear();
 };
 
 int Cluster::min3_index(double a, double b, double c){

@@ -634,8 +634,10 @@ int Cluster::reverse_assignment(void) {
             }
         }else if (this->assignment == "Mean_Frechet") {
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
+                //store current cluster as previous
                 previous_clusters[centroid].first = reverse_centroids[centroid].first;
                 if(this->reverse_centroids[centroid].second.size() != 0){
+                    //Update centroids
                     reverse_centroids[centroid].first = create_mean_curve_tree(this->reverse_centroids[centroid].second, this->reverse_centroids[centroid].first);
                 }
             }
@@ -667,7 +669,6 @@ int Cluster::min3_index(double a, double b, double c){
 
 vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double> P, vector<double> Q) {
     long double** L = create_DFD_Table(P, Q);
-    //long double **L = this->array_C;
 
     int i = P.size();
     int j = Q.size();
@@ -678,6 +679,7 @@ vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double
     traversal.push_back(make_pair(P[j],Q[i]));
 
     while (i != 0 && j != 0) {
+        //get the minimum index of 3 paths
         int min_index = min3_index(L[i-1][j], L[i][j-1], L[i-1][j-1]);
         if (min_index == 0)
             i--;
@@ -702,7 +704,8 @@ vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double
             traversal.push_back(make_pair(P[i], Q[j]));
         }
 
-    for (int n = 0; n < P.size(); n++)
+    //free allocated memory
+    for (int n = 0; n < P.size()+1; n++)
         delete[] L[n];
     delete[] L;
 
@@ -710,16 +713,16 @@ vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double
 }
 
 vector<double> Cluster::mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q) {
+    // get the optimal traversal path
 	vector<pair<double,double>> traversal = optimal_Traversal_Computation(P, Q);
 	int points_num = traversal.size();
 	vector<double> mean_curve;
 
 
-	// start from end (see comment in optimal_Traversal_Computation)
+	// create the mean curve
 	for (int i = 0 ; i <points_num; i++) {
 		pair<double,double> pair_var = traversal[i];
 		mean_curve.push_back((pair_var.first + pair_var.second) / 2);
-		//mean_points[points_num-1-i].print();
 	}
 
     traversal.clear();
@@ -735,7 +738,6 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
     vector<vector<double>> curr_node;
 
     // Start with original curves as leaves
-
     std::vector<int> indexes;
     for (int i = 0; i < cluster.size(); i++) {
         indexes.push_back(i);
@@ -774,12 +776,11 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
         nextNodes.clear();
     }
 
-    //postOrderPrint(curr_node[0]);
-    //curr_node[0]->curve->CurvePrint();
-
     //update centroid - return root total node
     vector<double> curve = curr_node[0];
     curr_node.clear();
+    indexes.clear();
+    
     return curve;
 }
 

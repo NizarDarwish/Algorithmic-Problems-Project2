@@ -6,10 +6,9 @@ long double discreteFrechetDistance( vector<double> curve_query, vector<double> 
 	long double euclidean_distance;
     
     query_points_num = curve_query.size();
+	curve_points_num = curve.size();
 
-    curve_points_num = curve.size();
-
-    //long double c[query_points_num+1][curve_points_num+1];
+    //cerate dynamic array of distances
 	long double **c = new long double*[query_points_num+1];
 	for(int i = 0; i <=query_points_num; ++i)
     	c[i] = new long double[curve_points_num+1];
@@ -19,9 +18,10 @@ long double discreteFrechetDistance( vector<double> curve_query, vector<double> 
 	{
 		for( j=1; j<curve_points_num+1; j++ )
 		{
-			// Euclidean distance
+			// Euclidean distance/norm
 			euclidean_distance =  sqrt(pow( curve_query[i-1] - curve[j-1], 2 ));
 
+			//choose path based on theory
 			if( i == 1 && j == 1 )
 				c[i][j] = euclidean_distance;
 			else if( i == 1 ){
@@ -89,7 +89,7 @@ long double** create_DFD_Table( vector<double> curve_query, vector<double> curve
 	{
 		for( j=1; j<curve_points_num+1; j++ )
 		{
-			// Euclidean distance
+			// Euclidean distance norm 
 			euclidean_distance =  sqrt(pow( curve_query[i-1] - curve[j-1], 2 ));
 
 			if( i == 1 && j == 1 )

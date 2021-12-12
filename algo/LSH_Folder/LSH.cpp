@@ -232,10 +232,8 @@ int LSH::Calculate_w() {
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {
-            if (this->metric == "discrete")
+            if (this->metric == "discrete" || this->metric == "continuous")
                 sum += discreteFrechetDistance(this->data[point], this->data[second_point]);
-            else if (this->metric == "continuous")
-                sum += Continuous_Frechet(this->data[point], this->data[second_point]);
             else
                 sum += euclidean_dis(this->data[point], this->data[second_point]);
         }

@@ -63,6 +63,11 @@ long double discreteFrechetDistance( vector<double> curve_query, vector<double> 
 
 	distance_DFD = c[query_points_num][curve_points_num];
 
+	for(int i = 0; i <=query_points_num; ++i)
+		delete [] c[i];
+
+	delete [] c;
+
 	return distance_DFD;
 }
 

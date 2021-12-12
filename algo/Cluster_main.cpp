@@ -3,6 +3,8 @@
 Cluster *cluster;
 LSH *Lsh;
 
+vector<string> ids;
+
 int main(int argc, char *argv[]) {
     cluster->data = store_Cluster_data(argc, argv);
     cluster->kMeanspp_Initialization();

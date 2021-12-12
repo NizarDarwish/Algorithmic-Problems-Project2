@@ -7,8 +7,8 @@ extern LSH *Lsh; /* LSH Object */
 int W;
 
 /* Initialize the variables used by the hash function */
-LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long long int n, int dim, vector<vector<double>> Data, double d, string method, string Algorithm)
-        :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), points_num(n), dimension(dim), delta(d), metric(method), algorithm(Algorithm)
+LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long long int n, int dim, vector<vector<double>> Data, double d, string method)
+        :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), points_num(n), dimension(dim), delta(d), metric(method)
     {
         data = Data;
         W = Calculate_w();
@@ -232,7 +232,12 @@ int LSH::Calculate_w() {
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {
-            sum += euclidean_dis(this->data[point], this->data[second_point]);
+            if (this->metric == "discrete")
+                sum += discreteFrechetDistance(this->data[point], this->data[second_point]);
+            else if (this->metric == "continuous")
+                sum += Continuous_Frechet(this->data[point], this->data[second_point]);
+            else
+                sum += euclidean_dis(this->data[point], this->data[second_point]);
         }
         sum /= (subpoints - point);
     }

@@ -15,7 +15,6 @@
 
 #define M 4294967291
 
-#include "./Handling_input.hpp"
 #include "../functions/functions.hpp"
 
 using namespace std;
@@ -61,7 +60,7 @@ class LSH {
         double delta;
         // Vector t for Gt (for shifting)
         vector<double> shift;
-        string algorithm, metric;
+        string metric;
 
         int R,N;
         long int hashtable_size;
@@ -74,7 +73,7 @@ class LSH {
         duration<double, std::milli> ANN_time;
         duration<double, std::milli> NNB_time;
 
-        LSH(string, string, string, int L_, int N_, int k_, long long int n, int dim, vector<vector<double>>, double, string, string);
+        LSH(string, string, string, int L_, int N_, int k_, long long int n, int dim, vector<vector<double>>, double, string);
         ~LSH();
         int get_pointsnum() { return points_num; }
         long int get_hashtablesize() { return hashtable_size; }
@@ -84,7 +83,6 @@ class LSH {
         int get_N() { return N; }
         int get_R() { return R; }
         string get_metric() { return metric; }
-        string get_algorithm() { return algorithm; }
         int get_dimension() { return dimension; }
         Bucket*** get_hashtables(){ return hashtables; }
         Euclidean_Hash_Function* get_hash_functions() { return Hash_Funs; }

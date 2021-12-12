@@ -54,7 +54,7 @@ long int num_of_points() {
 	return num_of_lines;
 }
 
-void read_file(vector<vector<double>> &vec, string input_file){ //, vector<string> &ids
+void read_file(vector<vector<double>> &vec, string input_file){
     string line;
     if (dir_input == "") dir_input = input_file;
     ifstream Data_File(input_file);
@@ -66,7 +66,6 @@ void read_file(vector<vector<double>> &vec, string input_file){ //, vector<strin
 
             string first_item;
             s >> first_item;
-            // ids.push_back(first_item);
             double d;
             vector<double> v1;
 
@@ -80,7 +79,10 @@ void read_file(vector<vector<double>> &vec, string input_file){ //, vector<strin
             s.str("");
         }
         
-    }else cout << "Unable to open file"; 
+    } else {
+        cout << "Unable to open file";
+        exit(EXIT_FAILURE);
+    }
     Data_File.close();
 }
 
@@ -118,11 +120,12 @@ long double euclidean_dis(vector<double> vec1, vector<double> vec2) {
 	return sqrt(dist);
 }
 
-vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> query, int N, string Metric) {
+vector <pair<long double, int>> Nearest_N_brute(vector<vector<double>> data, vector<double> query, int N, string Metric) {
     long double d = (double) BIG; // Minimum distance
 
-    vector <double> near_items;
+    vector <pair<long double, int>> near_items;
 
+    int iter = 0;
     for (auto Item: data) {
         long double euc_dist;
         if (Metric == "discrete")
@@ -136,10 +139,11 @@ vector <double> Nearest_N_brute(vector<vector<double>> data, vector<double> quer
             if (near_items.size() >= N) {
                 near_items.pop_back();
             }
-            near_items.push_back(euc_dist);
+            near_items.push_back(make_pair(euc_dist, iter));
             sort(near_items.begin(), near_items.end());
-            d = near_items.back();
+            d = near_items.back().first;
         }
+        iter++;
     }
 
     return near_items;
@@ -167,4 +171,26 @@ long double Continuous_Frechet(vector<double> Item, vector<double> query) {
     // delete(query_curve);
 
     return dist;
+}
+
+void read_ids(vector<string> &ids, string input_file){ 
+    string line;
+    ifstream Data_File(input_file);
+    
+    if (Data_File.is_open()){
+        while(getline(Data_File,line)){
+            stringstream s;
+            s << line;
+
+            string first_item;
+            s >> first_item;
+            ids.push_back(first_item);
+            s.str("");
+        }
+        
+    } else {
+        cout << "Unable to open file";
+        exit(EXIT_FAILURE);
+    }
+    Data_File.close();
 }

@@ -6,7 +6,7 @@ using namespace std;
 extern LSH *Lsh; /* LSH Object */
 extern Hypercube *Hpb; /* Hypercube Object */
 
-void store_data(int argc,char** argv){
+string store_data(int argc,char** argv){
     string input_file = "", query_file = "", output_file = "", metric = "", algorithm;
     int N = 1, R = 10000, k = 4, L = 5;
     int probes = 2, m = 10;
@@ -75,11 +75,13 @@ void store_data(int argc,char** argv){
     read_file(vec,input_file);
 
     if (algorithm == "LSH" || algorithm == "Frechet")
-        Lsh = new LSH(input_file, query_file, output_file, L, N, k, num_of_points(), dim_data(), vec, delta, metric, algorithm);
+        Lsh = new LSH(input_file, query_file, output_file, L, N, k, num_of_points(), dim_data(), vec, delta, metric);
     else if (algorithm == "Hypercube")
         Hpb = new Hypercube(input_file,query_file, output_file,k,1000,num_of_points(),N, dim_data(),probes,vec);
     else {
         cout << "give an algorithm" << endl;
         exit (EXIT_FAILURE);
     }
+
+    return algorithm;
 }

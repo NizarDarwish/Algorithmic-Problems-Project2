@@ -20,9 +20,11 @@ long int dim_data(); /* Get the dimensions of the data */
 long int num_of_points(); /* Get the number of the items */
 void read_file(vector<vector<double>>&, string);
 
+void read_ids(vector<string>&, string);
+
 double Normal_distribution(); /* Generates a sequence of random normal numbers */
 
-vector <double> Nearest_N_brute(vector<vector<double>>, vector<double> , int, string);
+vector <pair<long double, int>> Nearest_N_brute(vector<vector<double>>, vector<double> , int, string);
 
 long double euclidean_dis(vector<double> , vector<double> ); /* Calculate Euclidean Distance */
 

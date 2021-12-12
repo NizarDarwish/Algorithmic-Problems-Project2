@@ -9,6 +9,7 @@
 
 using namespace std;
 
-void store_data(int, char**);
+
+string store_data(int, char**);
 
 #endif

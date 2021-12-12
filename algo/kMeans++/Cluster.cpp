@@ -496,7 +496,7 @@ int Cluster::reverse_assignment(void) {
       
     if(Method=="LSH"||Method=="LSH_Frechet"){
         //we dont care about query file and  N here
-        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric, method);
+        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric);
         LSH_Insert_Points_To_Buckets(Lsh);
     }else if(Method=="Hypercube"){
         hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);
@@ -736,9 +736,21 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
     vector<TreeNode*> curr_node;
 
     // Start with original curves as leaves
-    for (int i = 0 ; i < cluster.size() ; i++){
-        curr_node.push_back(new TreeNode( &this->data[cluster[i]] ));
+
+    std::vector<int> indexes;
+    for (int i = 0; i < cluster.size(); i++) {
+        indexes.push_back(i);
     }
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    shuffle(indexes.begin(), indexes.end(), g);
+    
+    for (int i = 0 ; i < cluster.size() ; i++){
+        curr_node.push_back(new TreeNode( &this->data[cluster[indexes[i]]] ));
+    }
+    indexes.clear();
 
     vector<TreeNode*> nextNodes;
 
@@ -753,7 +765,6 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
             if (mean_curve.size() > size_t (dim)) {
                 mean_curve.erase(mean_curve.begin() + dim, mean_curve.end());
             }
-            cout << mean_curve.size() << endl;
 
             TreeNode* mean_node = new TreeNode(&mean_curve, curr_node[i], curr_node[i+1]);
             nextNodes.push_back(mean_node);
@@ -765,7 +776,6 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
 
         curr_node = nextNodes;
         nextNodes.clear();
-
     }
 
     //postOrderPrint(curr_node[0]);
@@ -785,6 +795,9 @@ void Cluster::print() {
 }
 
 void Cluster::output() {
+
+    vector<string> ids;
+    read_ids(ids, this->input_file);
     vector<pair<vector<double>, vector<int>>> temp;
     if(cluster->get_method() == "Classic" || cluster->get_method() == "Lloyd" ){
         temp = this->Lloyd;

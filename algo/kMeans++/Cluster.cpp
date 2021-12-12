@@ -43,7 +43,7 @@ Cluster::~Cluster() {
 
     if (centroids.size() > 0) centroids.clear();
 
-    delete hypercube_ptr;
+    if (Method == "Hypercube") delete hypercube_ptr;
 }
 
 void Cluster::read_config(string config_file) {
@@ -702,7 +702,7 @@ vector<pair<double,double>> Cluster::optimal_Traversal_Computation(vector<double
             traversal.push_back(make_pair(P[i], Q[j]));
         }
 
-    for (int n = 0; n < P.size(); n++)
+    for (int n = 0; n <= P.size(); n++)
         delete[] L[n];
     delete[] L;
 
@@ -764,6 +764,7 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
             }
 
             nextNodes.push_back(mean_curve);
+            mean_curve.clear();
         }
 
         // if size is odd, there is an extra node at the end

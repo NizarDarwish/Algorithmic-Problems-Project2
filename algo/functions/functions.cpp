@@ -54,10 +54,11 @@ long int num_of_points() {
 	return num_of_lines;
 }
 
-void read_file(vector<vector<double>> &vec, string input_file){
+double read_file(vector<vector<double>> &vec, string input_file){
     string line;
     if (dir_input == "") dir_input = input_file;
     ifstream Data_File(input_file);
+    double max = -1;
     
     if (Data_File.is_open()){
         while(getline(Data_File,line)){
@@ -71,6 +72,7 @@ void read_file(vector<vector<double>> &vec, string input_file){
 
             while(s >> d){
                 double num = static_cast<double>(d);
+                if (num > max) max = num;
                 v1.push_back(num);
             } 
             vec.push_back(v1);
@@ -84,6 +86,8 @@ void read_file(vector<vector<double>> &vec, string input_file){
         exit(EXIT_FAILURE);
     }
     Data_File.close();
+
+    return max;
 }
 
 double Normal_distribution() {
@@ -176,7 +180,7 @@ long double Continuous_Frechet(vector<double> Item, vector<double> query) {
 void read_ids(vector<string> &ids, string input_file){ 
     string line;
     ifstream Data_File(input_file);
-    
+
     if (Data_File.is_open()){
         while(getline(Data_File,line)){
             stringstream s;

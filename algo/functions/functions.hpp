@@ -18,7 +18,7 @@ using namespace std;
 
 long int dim_data(); /* Get the dimensions of the data */
 long int num_of_points(); /* Get the number of the items */
-void read_file(vector<vector<double>>&, string);
+double read_file(vector<vector<double>>&, string);
 
 void read_ids(vector<string>&, string);
 

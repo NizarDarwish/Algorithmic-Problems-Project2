@@ -58,6 +58,7 @@ class LSH {
         vector<int> r;
 
         double delta;
+        double max_value; // For padding
         // Vector t for Gt (for shifting)
         vector<double> shift;
         string metric;
@@ -73,7 +74,7 @@ class LSH {
         duration<double, std::milli> ANN_time;
         duration<double, std::milli> NNB_time;
 
-        LSH(string, string, string, int L_, int N_, int k_, long long int n, int dim, vector<vector<double>>, double, string);
+        LSH(string, string, string, int L_, int N_, int k_, long long int n, int dim, vector<vector<double>>, double, string, double);
         ~LSH();
         int get_pointsnum() { return points_num; }
         long int get_hashtablesize() { return hashtable_size; }

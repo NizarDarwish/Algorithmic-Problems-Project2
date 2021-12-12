@@ -7,8 +7,8 @@ extern LSH *Lsh; /* LSH Object */
 int W;
 
 /* Initialize the variables used by the hash function */
-LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long long int n, int dim, vector<vector<double>> Data, double d, string method)
-        :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), points_num(n), dimension(dim), delta(d), metric(method)
+LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long long int n, int dim, vector<vector<double>> Data, double d, string method, double max)
+        :input_file(input), query_file(query), output_file(output), L(L_), N(N_), k(k_), points_num(n), dimension(dim), delta(d), metric(method), max_value(max)
     {
         data = Data;
         W = Calculate_w();
@@ -116,6 +116,8 @@ vector<double> LSH::Filter_Curve(vector<double> item) {
 vector<double> LSH::Grid(int hashtable, vector<double> item) {
     // pi = floor(item[i]/delta + 1/2) * delta
 
+    double padding_value = this->max_value * 2;
+
     vector<double> P;
     if (this->get_metric() == "discrete") {
         // Calculate G vector
@@ -141,7 +143,7 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
 
         // Padding to 2d
         for (int i = P.size(); i < 2*this->get_dimension(); i++) {
-            P.push_back(500);
+            P.push_back(padding_value);
         }
     } else if (this->get_metric() == "continuous") {
         vector<double> p;
@@ -160,7 +162,7 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
 
         // Padding to d
         for (int i = P.size(); i < this->get_dimension(); i++) {
-            P.push_back(1000);
+            P.push_back(padding_value);
         }
     }
 

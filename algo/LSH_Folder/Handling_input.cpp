@@ -72,10 +72,10 @@ string store_data(int argc,char** argv){
     else if (metric == "continuous" && algorithm == "Frechet") L = 1;
 
     vector<vector<double>> vec;
-    read_file(vec,input_file);
+    double max = read_file(vec,input_file);
 
     if (algorithm == "LSH" || algorithm == "Frechet")
-        Lsh = new LSH(input_file, query_file, output_file, L, N, k, num_of_points(), dim_data(), vec, delta, metric);
+        Lsh = new LSH(input_file, query_file, output_file, L, N, k, num_of_points(), dim_data(), vec, delta, metric, max);
     else if (algorithm == "Hypercube")
         Hpb = new Hypercube(input_file,query_file, output_file,k,1000,num_of_points(),N, dim_data(),probes,vec);
     else {

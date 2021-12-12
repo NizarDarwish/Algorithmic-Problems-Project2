@@ -7,9 +7,9 @@ using std::chrono::duration;
 extern Cluster *cluster;
 extern LSH *Lsh;
 
-Cluster::Cluster(string input, string config, string out, bool comp, string method, string assign, bool sil)
-                :input_file(input), config_file(config), output_file(out), complete(comp), Method(method),
-                 assignment(assign), silhouette(sil) {
+Cluster::Cluster(string input, string config, string out, bool comp, string method, string assign, bool sil, double max)
+                :input_file(input), config_file(config), output_file(out), complete(comp), Method(method), assignment(assign),
+                 silhouette(sil), max_value(max) {
 
         read_config(config); // Read configuration file
         this->num_of_Items = num_of_points();
@@ -496,7 +496,7 @@ int Cluster::reverse_assignment(void) {
       
     if(Method=="LSH"||Method=="LSH_Frechet"){
         //we dont care about query file and  N here
-        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric);
+        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 0.0, metric, this->max_value);
         LSH_Insert_Points_To_Buckets(Lsh);
     }else if(Method=="Hypercube"){
         hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);

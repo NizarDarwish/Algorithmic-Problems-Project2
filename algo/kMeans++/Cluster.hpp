@@ -45,6 +45,7 @@ class Cluster {
     private:
         bool complete = false;
         bool silhouette;
+        double max_value; // For padding
         string Method;
         string assignment;
         int L=3; // num of hash tables for LSH
@@ -76,7 +77,7 @@ class Cluster {
     public:
         vector<vector<double>> data; // Input data
 
-        Cluster(string, string, string, bool, string, string, bool);
+        Cluster(string, string, string, bool, string, string, bool, double);
         ~Cluster();
 
         void kMeanspp_Initialization(); /* Initializes the centroids */

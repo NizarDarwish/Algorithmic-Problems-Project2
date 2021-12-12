@@ -22,16 +22,19 @@ int main(int argc, char *argv[]) {
     if (Lsh != NULL) queries = Lsh->queries_data.size();
     else queries = Hpb->query_data.size();
 
-    vector<string> ids;
-    string input, output;
+    vector<string> ids, q_ids;
+    string input, output, query;
     if (Lsh != NULL) {
         input = Lsh->input_file;
         output = Lsh->output_file;
+        query = Lsh->query_file;
     } else {
         input = Hpb->input_file;
         output = Hpb->output_file;
+        query = Hpb->query_file;
     }
     read_ids(ids, input);
+    read_ids(q_ids, query);
 
     ofstream Output;
     Output.open (output, ofstream::out | ofstream::trunc);
@@ -58,7 +61,7 @@ int main(int argc, char *argv[]) {
             Lsh->queries_data[query] = Lsh->Filter_Curve(Lsh->queries_data[query]);
         }
 
-        Output << "Query: " << ids[query] << endl;
+        Output << "Query: " << q_ids[query] << endl;
         Output << "Algorithm: " << algorithm << endl;
         auto begin = high_resolution_clock::now();
         if (Lsh != NULL)

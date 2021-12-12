@@ -57,9 +57,9 @@ vector<vector<double>> store_Cluster_data(int argc,char** argv){
     }
         
     vector<vector<double>> vec;
-    read_file(vec,input_file);
+    double max = read_file(vec,input_file);
 
-    cluster = new Cluster(input_file, configuration_file, output_file, complete, Method, update, silhouette);
+    cluster = new Cluster(input_file, configuration_file, output_file, complete, Method, update, silhouette, max);
 
     return vec;
 }

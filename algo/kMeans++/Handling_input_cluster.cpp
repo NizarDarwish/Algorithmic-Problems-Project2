@@ -50,8 +50,8 @@ vector<vector<double>> store_Cluster_data(int argc,char** argv){
     if (input_file == "" || configuration_file == "" || output_file == "" || Method == "" || update == "") {
         cout << "Error: Missing files directory" << endl;
         exit (EXIT_FAILURE);
-    } else if ((Method == "LSH_Frechet" && update == "Mean_Vector") ||
-                ((Method == "LSH" || Method == "Hypercube") && update == "Mean_Frechet")) {
+    } else if ((Method == "LSH_Frechet" && update != "Mean_Frechet") ||
+                ((Method == "LSH" || Method == "Hypercube") && update != "Mean_Vector")) {
         cout << "Assignment with wrong update" << endl;
         exit (EXIT_FAILURE);
     }

@@ -114,7 +114,8 @@ vector<double> LSH::Filter_Curve(vector<double> item) {
 }
 
 vector<double> LSH::Grid(int hashtable, vector<double> item) {
-    // pi = floor(item[i]/delta + 1/2) * delta
+    // xi' = floor((x-t)/δ + 1/2)*δ + t
+    // pi = floor((item[i] - t)/delta + 1/2) * delta
 
     double padding_value = this->max_value * 2;
 
@@ -124,8 +125,8 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
         // Snap
         vector<pair<double, double>> p;
         for (int dim = 0; dim < this->get_dimension(); dim++) {
-            double value = floor(item[dim]/this->delta + 1/2) * this->delta;
-            double time = floor(dim/this->delta + 1/2) * this->delta;
+            double value = floor((item[dim] - shift[hashtable])/this->delta + 1/2) * this->delta;
+            double time = floor((dim - shift[hashtable])/this->delta + 1/2) * this->delta;
             p.push_back(make_pair(time + shift[hashtable], value + shift[hashtable]));
         }
         for (auto it = p.begin(); it != p.end(); ++it) {
@@ -148,7 +149,7 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
     } else if (this->get_metric() == "continuous") {
         vector<double> p;
         for (int dim = 0; dim < this->get_dimension(); dim++) {
-            double value = floor(item[dim]/this->delta + 1/2) * this->delta;
+            double value = floor((item[dim] + shift[hashtable])/this->delta) * this->delta;
             p.push_back(value);
         }
 
@@ -230,7 +231,7 @@ void Print_values() {
 */
 int LSH::Calculate_w() {
     long double sum = 0;
-    long int subpoints = this->points_num * 5/100;
+    long int subpoints = this->points_num * 10/100;
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {

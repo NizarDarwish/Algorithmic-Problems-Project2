@@ -168,24 +168,32 @@ vector<double> Cluster::Calculate_Mean(vector<int> near_points) {
 
 // This function compares all new clusters to their previous
 // if the clusters have not changed much then return false else return true
-bool Cluster::Compare(vector<vector<double>> previous_clusters) {
+bool Cluster::Compare(vector<vector<int>> previous_clusters) {
     int counter = 0;
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
         double sum_of_diff_points = 0.0;
         int size = previous_clusters[centroid].size();
+        int cluster_size = previous_clusters[centroid].size();
         if (size == 0) return true;
-        for (int point = 0; point < size; point++) {
-            if (Lloyd[centroid].first[point] != previous_clusters[centroid][point]) {
-                sum_of_diff_points++;
+        for (int cluster_point = 0; cluster_point < cluster_size; cluster_point++) {
+            bool different = true;
+            for (int point = 0; point < size; point++) {
+                if (Lloyd[centroid].second[cluster_point] == previous_clusters[centroid][point]) {
+                    different = false;
+                }
             }
+
+            if (different) sum_of_diff_points++;
         }
 
         // If 10% of the cluster has changed return true
-        double percentage = (double)sum_of_diff_points/(double) (size - 1);
-        if (percentage >= 0.01) counter++;
+        double percentage;
+        if (cluster_size - 1 == 0) percentage = 0;
+        else percentage = (double)sum_of_diff_points/(double) (cluster_size - 1);
+        if (percentage >= 0.01) return true;
     }
 
-    if (counter <= number_of_clusters/2) return true;
+    // if (counter <= number_of_clusters/2 + 1) return true;
 
     return false;
 }
@@ -206,11 +214,11 @@ void Cluster::Lloyd_method() {
 
     auto begin = high_resolution_clock::now();
 
-    vector<double> empty;
+    vector<int> empty;
     empty.clear();
-    vector<vector<double>> previous_clusters(number_of_clusters, empty);
+    vector<vector<int>> previous_clusters(number_of_clusters, empty);
     // Do this until there is almost no difference to the centroids
-    while (Compare(previous_clusters)) {
+    while (previous_clusters.size() == size_t(0) || Compare(previous_clusters)) {
         // Assign each point to its centroid
         for (int centroid = 0; centroid < number_of_clusters; centroid++) {
             Lloyd[centroid].second.clear();
@@ -241,13 +249,13 @@ void Cluster::Lloyd_method() {
         if (this->assignment == "Mean_Vector") {
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
                 previous_clusters[centroid].clear();
-                previous_clusters[centroid] = Lloyd[centroid].first;
+                previous_clusters[centroid] = Lloyd[centroid].second;
                 Lloyd[centroid].first = Calculate_Mean(Lloyd[centroid].second);
             }
         } else if (this->assignment == "Mean_Frechet") {
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
                 previous_clusters[centroid].clear();
-                previous_clusters[centroid] = Lloyd[centroid].first;
+                previous_clusters[centroid] = Lloyd[centroid].second;
                 Lloyd[centroid].first = create_mean_curve_tree(Lloyd[centroid].second, Lloyd[centroid].first);
             }
         }

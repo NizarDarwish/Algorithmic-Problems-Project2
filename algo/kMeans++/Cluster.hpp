@@ -83,7 +83,7 @@ class Cluster {
         void kMeanspp_Initialization(); /* Initializes the centroids */
         void Lloyd_method();
         vector<double> Calculate_Mean(vector<int>);
-        bool Compare(vector<vector<double>>);
+        bool Compare(vector<vector<int>>);
         bool Compare1(vector<pair<vector<double>, vector<int>>>);
         bool Check(vector<pair<vector<double>, vector<int>>>);
         void Silhouette();

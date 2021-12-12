@@ -722,26 +722,13 @@ vector<double> Cluster::mean_Discrete_Frechet_Curve(vector<double> P, vector<dou
 	return mean_curve;
 }
 
-void Cluster::postOrderPrint(TreeNode* node) {
-	if (node->left!= NULL) {
-	    std::cout << "LEFT" << endl;
-		postOrderPrint(node->left);
-	}
-	if (node->right!=NULL) {
-		std::cout << "RIGHT" << endl;
-		postOrderPrint(node->right);
-	}
-	std::cout << "ROOT" << endl;
-	//node->curve->CurvePrint();
-}
-
 vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<double> center) {
 
     //if cluster is empty
     if (cluster.size() == 0 || cluster.size() == 1)
         return center;
 
-    vector<TreeNode*> curr_node;
+    vector<vector<double>> curr_node;
 
     // Start with original curves as leaves
 
@@ -756,26 +743,23 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
     shuffle(indexes.begin(), indexes.end(), g);
     
     for (int i = 0 ; i < cluster.size() ; i++){
-        curr_node.push_back(new TreeNode( &this->data[cluster[indexes[i]]] ));
+        curr_node.push_back(this->data[cluster[indexes[i]]]);
     }
     indexes.clear();
 
-    vector<TreeNode*> nextNodes;
+    vector<vector<double>> nextNodes;
 
     while(curr_node.size()>1){
     // Take curves in pairs
         //step 2 because we have binary tree
         for (int i = 0 ; i < curr_node.size() - 1; i+=2) {
-            vector<double> P = *(curr_node[i]->curve_id);
-            vector<double> Q = *(curr_node[i+1]->curve_id);
-            vector<double> mean_curve = mean_Discrete_Frechet_Curve(P, Q);
+            vector<double> mean_curve = mean_Discrete_Frechet_Curve(curr_node[i], curr_node[i+1]);
             long int dim = dim_data();
             if (mean_curve.size() > size_t (dim)) {
                 mean_curve.erase(mean_curve.begin() + dim, mean_curve.end());
             }
 
-            TreeNode* mean_node = new TreeNode(&mean_curve, curr_node[i], curr_node[i+1]);
-            nextNodes.push_back(mean_node);
+            nextNodes.push_back(mean_curve);
         }
 
         // if size is odd, there is an extra node at the end
@@ -790,7 +774,9 @@ vector<double> Cluster::create_mean_curve_tree(vector<int> cluster, vector<doubl
     //curr_node[0]->curve->CurvePrint();
 
     //update centroid - return root total node
-    return *(curr_node[0]->curve_id);
+    vector<double> curve = curr_node[0];
+    curr_node.clear();
+    return curve;
 }
 
 void Cluster::print() {

@@ -22,25 +22,6 @@
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
-struct TreeNode {
-	vector<double>* curve_id;
-	TreeNode* left;
-	TreeNode* right;
-
-	TreeNode(vector<double>* curve, TreeNode* left = NULL, TreeNode* right = NULL) {
-		this->curve_id = curve;
-		this->left = left;
-		this->right = right;
-	}
-
-	bool isLeaf() {
-		if (left == NULL && right == NULL)
-			return true;
-		else
-			return false;
-	}
-};
-
 class Cluster {
     private:
         bool complete = false;
@@ -101,7 +82,6 @@ class Cluster {
         vector<double> mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q);
         vector<pair<double,double>> optimal_Traversal_Computation(vector<double> P, vector<double> Q);
         int min3_index(double a, double b, double c);
-        void postOrderPrint(TreeNode* node);
 };
 
 #endif

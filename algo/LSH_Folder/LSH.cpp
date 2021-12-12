@@ -226,7 +226,7 @@ void Print_values() {
 }
 
 /*
-* w is defined by calculating the average euclidean distance between 5% of the input data
+* w is defined by calculating the average euclidean distance between 10% of the input data
 * if the input is small and therefore 5% is less than zero then take half the points into consideration
 */
 int LSH::Calculate_w() {

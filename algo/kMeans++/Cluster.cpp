@@ -460,14 +460,13 @@ long int Cluster::min_distance_between_centroids(){
 bool Cluster::Compare1(vector<pair<vector<double>, vector<int>>> previous_clusters) {
     int sum_of_same_centroids = 0;
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
-        if (previous_clusters[centroid].first.size() == 0 || reverse_centroids[centroid].second.size() == 0) { cout << "o" << endl; return true; }
+        if (previous_clusters[centroid].first.size() == 0 || reverse_centroids[centroid].second.size() == 0) { return true; }
         long double dist;
         if (this->assignment == "Mean_Frechet")
             dist = discreteFrechetDistance(previous_clusters[centroid].first, reverse_centroids[centroid].first);
         else
             dist = euclidean_dis(previous_clusters[centroid].first, reverse_centroids[centroid].first);
 
-        cout << dist << endl;
         if (dist < 10.0)
             sum_of_same_centroids++;
     }
@@ -538,7 +537,7 @@ int Cluster::reverse_assignment(void) {
       
     if(Method=="LSH"||Method=="LSH_Frechet"){
         //we dont care about query file and  N here
-        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 5.0, metric, this->max_value);
+        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 10.0, metric, this->max_value);
         LSH_Insert_Points_To_Buckets(Lsh);
     }else if(Method=="Hypercube"){
         hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);
@@ -709,7 +708,11 @@ void Cluster::output() {
     ofstream Output;
     Output.open (this->output_file, ofstream::out | ofstream::trunc);
     Output << "Algorithm: ";
-    if (this->Method == "Classic" || this->Method == "Lloyd") Output << "Lloyds";
+    if (this->Method == "Classic" || this->Method == "Lloyd") {
+        Output << "Lloyds - ";
+        if (this->assignment == "Mean_Frechet") Output << "Update Mean_Frechet";
+        else Output << "Update Mean_Vector";
+    }
     else if (this->Method == "LSH") Output << "Algorithm LSH - Update Mean_Vector";
     else if (this->Method == "Hypercube") Output << "Algorithm Hypercube - Update Mean_Vector";
     else if (this->Method == "LSH_Frechet") Output << "Algorithm LSH_Frechet - Update Mean_Frechet";

@@ -13,8 +13,6 @@ LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long l
         data = Data;
         W = Calculate_w();
 
-        cout << W << endl;
-
         // Number of buckets per hash table
         hashtable_size = n/4;
         Hash_Funs = new Euclidean_Hash_Function[L];
@@ -190,18 +188,15 @@ vector<long long int> LSH::Specific_Hash_Value(int g, vector<double> item) {
 int LSH::Calculate_w() {
     long double sum = 0;
     long int subpoints;
-    if (this->metric == "discrete") subpoints = this->points_num * 10/100;
-    else subpoints = this->points_num * 5/100;
+    subpoints = this->points_num * 5/100;
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {
-            if (this->metric == "di")
-                sum += discreteFrechetDistance(this->data[point], this->data[second_point]);
-            else
-                sum += euclidean_dis(this->data[point], this->data[second_point]);
+            sum += euclidean_dis(this->data[point], this->data[second_point]);
         }
         sum /= (subpoints - point);
     }
+    sum /= 2;
     set_w(sum);
     return this->get_w();
 }

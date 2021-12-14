@@ -456,7 +456,7 @@ long int Cluster::min_distance_between_centroids(){
 
 
 // This function computes the distance between the new and the previous centroids
-// if the distance is less than 0.1 to at least half the centroids then return false else return true
+// if the distance is less than 10.0 to at least half the centroids then return false else return true
 bool Cluster::Compare1(vector<pair<vector<double>, vector<int>>> previous_clusters) {
     int sum_of_same_centroids = 0;
     for (int centroid = 0; centroid < number_of_clusters; centroid++) {
@@ -473,35 +473,6 @@ bool Cluster::Compare1(vector<pair<vector<double>, vector<int>>> previous_cluste
 
     if (sum_of_same_centroids >= number_of_clusters/2) return false;
     else return true;
-
-    // int counter = 0;
-    // for (int centroid = 0; centroid < number_of_clusters; centroid++) {
-    //     double sum_of_diff_points = 0.0;
-    //     int size = previous_clusters[centroid].second.size();
-    //     int cluster_size = reverse_centroids[centroid].second.size();
-    //     if (size == 0) return true;
-    //     for (int cluster_point = 0; cluster_point < cluster_size; cluster_point++) {
-    //         bool different = true;
-    //         for (int point = 0; point < size; point++) {
-    //             if (reverse_centroids[centroid].second[cluster_point] == previous_clusters[centroid].second[point]) {
-    //                 different = false;
-    //             }
-    //         }
-
-    //         if (different) sum_of_diff_points++;
-    //     }
-
-    //     // If 10% of the cluster has changed return true
-    //     double percentage;
-    //     if (cluster_size - 1 == 0) percentage = 0;
-    //     else percentage = (double)sum_of_diff_points/(double) (cluster_size - 1);
-    //     cout << percentage << endl;
-    //     if (percentage >= 0.1) counter++;
-    // }
-
-    // if (counter >= number_of_clusters/2) return true;
-
-    // return false;
 }
 
 // Check if the clusters changed

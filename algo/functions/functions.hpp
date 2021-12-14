@@ -29,3 +29,5 @@ vector <pair<long double, int>> Nearest_N_brute(vector<vector<double>>, vector<d
 long double euclidean_dis(vector<double> , vector<double> ); /* Calculate Euclidean Distance */
 
 long double Continuous_Frechet(vector<double> , vector<double> );
+
+vector<double> Filter_Curve(vector<double> );

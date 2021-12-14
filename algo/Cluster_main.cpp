@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
         cluster->reverse_assignment();
 
     cout << "cluster ok" << endl;
-    cluster->Silhouette();
+    if (cluster->get_silhouette()) cluster->Silhouette();
     cluster->output();
     cluster->print();
     if (Lsh) delete(Lsh);

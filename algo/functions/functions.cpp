@@ -198,3 +198,23 @@ void read_ids(vector<string> &ids, string input_file){
     }
     Data_File.close();
 }
+
+vector<double> Filter_Curve(vector<double> item) {
+    // Calculate the Mean of steps
+    double sum = 0.0;
+    for (auto it = item.begin(); it != item.end(); ++it) {
+        if ((it + 1) == item.end()) break;
+        sum += abs(it[0] - (it + 1)[0]);
+    }
+
+    sum /= item.size();
+
+    // Filter out some values
+    for (auto it = item.begin(); it != item.end() && (it + 1) != item.end() && (it + 2) != item.end(); ++it) {
+        if (abs(it[0] - (it + 1)[0]) < sum && abs((it + 1)[0] - (it + 2)[0]) < sum) {
+            item.erase((it + 1));
+        }
+    }
+
+    return item;
+}

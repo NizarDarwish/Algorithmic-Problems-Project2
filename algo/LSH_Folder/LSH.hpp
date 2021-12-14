@@ -98,15 +98,11 @@ class LSH {
         vector<pair<long double,int>> Search_by_range2(vector<double> query,long int R_custom);
 
         vector<double> Grid(int, vector<double> );
-
-        vector<double> Filter_Curve(vector<double> );
 };
 
 void LSH_Insert_Points_To_Buckets(LSH* info); /* Initialize Data (Input) */
 
 long long int mod(long long int, long int); /* This mod can handle negative values */
-
-void Print_values(); /* Used for Debugging */
 
 /* Finds the N-Nearest Items to the query using LSH hash function */
 vector<pair<long double, int>> Nearest_N_search(vector<double> );

@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     for (int query = 0; query < queries; query++) {
         // Filter the query curve
         if (Lsh != NULL && Lsh->get_metric() == "continuous") {
-            Lsh->queries_data[query] = Lsh->Filter_Curve(Lsh->queries_data[query]);
+            Lsh->queries_data[query] = Filter_Curve(Lsh->queries_data[query]);
         }
 
         Output << "Query: " << q_ids[query] << endl;
@@ -93,8 +93,8 @@ int main(int argc, char *argv[]) {
         else Output << ANN_result[0].first << endl;
         Output << "distanceTrue: " << NNB_result[0].first << endl << endl;
 
-        if (ANN_result.size() != 0 && max_dis < ANN_result[0].first)
-            max_dis = ANN_result[0].first;
+        if (ANN_result.size() != 0 && max_dis < ANN_result[0].first / NNB_result[0].first)
+            max_dis = ANN_result[0].first / NNB_result[0].first;
 
         if (Lsh != NULL) {
             tApproximate += Lsh->ANN_time.count();

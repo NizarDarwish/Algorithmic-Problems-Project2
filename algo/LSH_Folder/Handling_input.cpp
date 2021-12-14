@@ -10,7 +10,7 @@ string store_data(int argc,char** argv){
     string input_file = "", query_file = "", output_file = "", metric = "", algorithm;
     int N = 1, R = 10000, k = 4, L = 5;
     int probes = 2, m = 10;
-    double delta;
+    double delta = 2.0;
 
     if(argc < 7 || argc > 21){
         cout << "Error in command line arguments:" << endl;

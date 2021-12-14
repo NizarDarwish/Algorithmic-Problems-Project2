@@ -68,7 +68,8 @@ class Cluster {
         bool Compare1(vector<pair<vector<double>, vector<int>>>);
         bool Check(vector<pair<vector<double>, vector<int>>>);
         void Silhouette();
-        string get_method(void){return Method;};
+        string get_method(void){return Method;}
+        bool get_silhouette() { return silhouette; }
         void read_config(string );
 
         void output();
@@ -78,10 +79,6 @@ class Cluster {
         int nearest_centroid(vector<double> vec);
         long int  min_distance_between_centroids(void);
         int reverse_assignment(void);
-        vector<double> create_mean_curve_tree(vector<int> cluster, vector<double> center);
-        vector<double> mean_Discrete_Frechet_Curve(vector<double> P, vector<double> Q);
-        vector<pair<double,double>> optimal_Traversal_Computation(vector<double> P, vector<double> Q);
-        int min3_index(double a, double b, double c);
 };
 
 #endif

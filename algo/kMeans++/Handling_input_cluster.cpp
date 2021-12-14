@@ -54,6 +54,9 @@ vector<vector<double>> store_Cluster_data(int argc,char** argv){
                 ((Method == "LSH" || Method == "Hypercube") && update != "Mean_Vector")) {
         cout << "Assignment with wrong update" << endl;
         exit (EXIT_FAILURE);
+    } else if (Method != "LSH_Frechet" && Method != "LSH" && Method != "Hypercube" && Method != "Lloyd" && Method != "Classic") {
+        cout << "Give an algorithm!" << endl;
+        exit (EXIT_FAILURE);
     }
         
     vector<vector<double>> vec;

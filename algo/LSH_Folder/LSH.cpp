@@ -13,6 +13,8 @@ LSH::LSH(string input, string query, string output, int L_,int N_,int k_, long l
         data = Data;
         W = Calculate_w();
 
+        cout << W << endl;
+
         // Number of buckets per hash table
         hashtable_size = n/4;
         Hash_Funs = new Euclidean_Hash_Function[L];
@@ -93,26 +95,6 @@ long long int mod(long long int value, long int Mod) {
         return (unsigned int) (value % Mod);
 }
 
-vector<double> LSH::Filter_Curve(vector<double> item) {
-    // Calculate the Mean of steps
-    double sum = 0.0;
-    for (auto it = item.begin(); it != item.end(); ++it) {
-        if ((it + 1) == item.end()) break;
-        sum += abs(it[0] - (it + 1)[0]);
-    }
-
-    sum /= item.size();
-
-    // Filter out some values
-    for (auto it = item.begin(); it != item.end() && (it + 1) != item.end(); ++it) {
-        if (abs(it[0] - (it + 1)[0]) < sum && abs((it + 1)[0] - (it + 2)[0]) < sum) {
-            item.erase((it + 1));
-        }
-    }
-
-    return item;
-}
-
 vector<double> LSH::Grid(int hashtable, vector<double> item) {
     // xi' = floor((x-t)/δ + 1/2)*δ + t
     // pi = floor((item[i] - t)/delta + 1/2) * delta
@@ -149,7 +131,7 @@ vector<double> LSH::Grid(int hashtable, vector<double> item) {
     } else if (this->get_metric() == "continuous") {
         vector<double> p;
         for (int dim = 0; dim < this->get_dimension(); dim++) {
-            double value = floor((item[dim] + shift[hashtable])/this->delta) * this->delta;
+            double value = floor(item[dim]/this->delta) * this->delta;
             p.push_back(value);
         }
 
@@ -201,41 +183,19 @@ vector<long long int> LSH::Specific_Hash_Value(int g, vector<double> item) {
     return {mod(hash_value, this->get_hashtablesize()), ID};
 }
 
-
-void Print_values() {
-    cout << "L: " << Lsh->get_L() << endl << "k: " << Lsh->get_k() << endl;
-    cout << "dimensions: " << Lsh->get_dimension() << endl << "number of items: " << Lsh->get_pointsnum() << endl;
-    cout << "Range-R: " << Lsh->get_R() << endl << "N: " << Lsh->get_N() << endl;
-    cout << "W: " << Lsh->get_w() << endl;
-
-    /* Print vector v */
-    // for (auto vec: v) {
-    //     cout << "vector v: ";
-    //     for (auto i: vec)
-    //         cout << i << ", ";
-    //     cout << endl;
-    // }
-
-    /* Print vector t */
-    // cout << "vector t: ";
-    // for (auto vec: t)
-    //     cout << vec << ", ";  
-    // cout << endl;
-
-    Lsh->print_buckets();
-}
-
 /*
 * w is defined by calculating the average euclidean distance between 10% of the input data
 * if the input is small and therefore 5% is less than zero then take half the points into consideration
 */
 int LSH::Calculate_w() {
     long double sum = 0;
-    long int subpoints = this->points_num * 10/100;
+    long int subpoints;
+    if (this->metric == "discrete") subpoints = this->points_num * 10/100;
+    else subpoints = this->points_num * 5/100;
     if (subpoints == 0) subpoints = this->points_num/2;
     for (int point = 0; point < subpoints - 1; point++) {
         for (int second_point = point; second_point < subpoints; second_point++) {
-            if (this->metric == "discrete")
+            if (this->metric == "di")
                 sum += discreteFrechetDistance(this->data[point], this->data[second_point]);
             else
                 sum += euclidean_dis(this->data[point], this->data[second_point]);

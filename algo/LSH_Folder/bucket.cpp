@@ -13,7 +13,7 @@ void LSH_Insert_Points_To_Buckets(LSH* info){
     //Fill buckets of Hash_Table
     for(int i=0;i<points_num;i++){
         if (info->get_metric() == "continuous")
-            info->data[i] = info->Filter_Curve(info->data[i]);
+            info->data[i] = Filter_Curve(info->data[i]);
         for(int j=0;j<L_var;j++){
             vector<double> data;
             if (info->get_metric() == "discrete" || info->get_metric() == "continuous")

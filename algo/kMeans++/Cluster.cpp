@@ -671,6 +671,7 @@ int Cluster::reverse_assignment(void) {
             }
         }else if (this->assignment == "Mean_Frechet") {
             for (int centroid = 0; centroid < number_of_clusters; centroid++) {
+                //store current cluster as previous
                 previous_clusters[centroid].first = reverse_centroids[centroid].first;
                 if(this->reverse_centroids[centroid].second.size() != 0){
                     reverse_centroids[centroid].first = create_mean_curve_tree(this->reverse_centroids[centroid].second, this->reverse_centroids[centroid].first, this->data, dimensions);

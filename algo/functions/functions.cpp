@@ -208,6 +208,7 @@ vector<double> Filter_Curve(vector<double> item) {
     }
 
     sum /= item.size();
+    sum *= 2;
 
     // Filter out some values
     for (auto it = item.begin(); it != item.end() && (it + 1) != item.end() && (it + 2) != item.end(); ++it) {

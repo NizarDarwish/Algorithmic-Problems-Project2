@@ -467,7 +467,7 @@ bool Cluster::Compare1(vector<pair<vector<double>, vector<int>>> previous_cluste
         else
             dist = euclidean_dis(previous_clusters[centroid].first, reverse_centroids[centroid].first);
 
-        if (dist < 10.0)
+        if ((this->assignment == "Mean_Frechet" && dist < 20.0) || (this->assignment == "Mean_Vector" && dist < 150.0))
             sum_of_same_centroids++;
     }
 
@@ -508,7 +508,7 @@ int Cluster::reverse_assignment(void) {
       
     if(Method=="LSH"||Method=="LSH_Frechet"){
         //we dont care about query file and  N here
-        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 10.0, metric, this->max_value);
+        Lsh = new LSH(input_file, "", output_file, this->L, 1, this->k, this->num_of_Items, dim_data(), this->data, 1.0, metric, this->max_value);
         LSH_Insert_Points_To_Buckets(Lsh);
     }else if(Method=="Hypercube"){
         hypercube_ptr = new Hypercube(input_file, "", output_file, this->number_of_hypercube_dimensions, this->max_number_M_hypercube,this->num_of_Items,5,dim_data() , this->number_of_probes, this->data);

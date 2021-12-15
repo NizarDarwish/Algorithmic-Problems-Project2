@@ -19,7 +19,7 @@ long double discreteFrechetDistance( vector<double> curve_query, vector<double> 
 		for( j=1; j<curve_points_num+1; j++ )
 		{
 			// Euclidean distance/norm
-			euclidean_distance =  sqrt(pow( curve_query[i-1] - curve[j-1], 2 ));
+			euclidean_distance =  sqrt(pow(i - j, 2) + pow( curve_query[i-1] - curve[j-1], 2 ));
 
 			//choose path based on theory
 			if( i == 1 && j == 1 )

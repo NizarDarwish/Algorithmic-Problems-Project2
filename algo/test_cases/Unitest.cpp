@@ -97,18 +97,18 @@ void ContinuousFrechet() {
 }
 
 void DiscreteFrechet() {
-    double distance = 0.0; 
+    long double distance = 0.0; 
 
     vector<double> curve1 {5, 5, 5};
     vector<double> curve2 {10, 10};
     distance = discreteFrechetDistance(curve1, curve2);
-    CU_ASSERT(5 == distance); 
+    CU_ASSERT(5 == (int)distance); 
 
 
     vector<double> curve3 {20, 20, 20, 30};
     vector<double> curve4 {25, 40};
     distance = discreteFrechetDistance(curve3, curve4);
-    CU_ASSERT(10 == distance);  
+    CU_ASSERT(10 == (int)distance);  
 
 }
 
